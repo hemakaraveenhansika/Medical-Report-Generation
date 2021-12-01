@@ -310,7 +310,7 @@ class CaptionSampler(object):
 
         if self.model_state_dict is not None:
             print("Visual Extractor Loaded!")
-            print(self.model_state_dict['extractor'])
+            # print(self.model_state_dict['extractor'])
             model.load_state_dict(self.model_state_dict['extractor'])
 
         if self.args.cuda:
