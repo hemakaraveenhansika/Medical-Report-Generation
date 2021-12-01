@@ -398,7 +398,7 @@ if __name__ == '__main__':
                         help='the path for images')
     parser.add_argument('--caption_json', type=str, default='./data/new_data/debugging_captions.json',
                         help='path for captions')
-    parser.add_argument('--vocab_path', type=str, default='./data/new_data/debug_vocab.pkl',
+    parser.add_argument('--vocab_path', type=str, default='./data/new_data/debugging_vocab.pkl',
                         help='the path for vocabulary object')
     parser.add_argument('--file_lits', type=str, default='./data/new_data/debugging_data.txt',
                         help='the path for test file list')
