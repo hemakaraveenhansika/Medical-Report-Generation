@@ -405,7 +405,7 @@ if __name__ == '__main__':
     import warnings
     warnings.filterwarnings("ignore")
 #
-    extractor = VisualFeatureExtractor(model_name='resnet152')
+    extractor = VisualFeatureExtractor(model_name='densenet201')
     mlc = MLC(fc_in_features=extractor.out_features)
     co_att = CoAttention(visual_size=extractor.out_features)
     sent_lstm = SentenceLSTM()
