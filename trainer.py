@@ -583,21 +583,16 @@ if __name__ == '__main__':
     """
     parser.add_argument('--momentum', type=int, default=0.1)
     # VisualFeatureExtractor
-    parser.add_argument('--visual_model_name', type=str, default='densenet201',
-                        help='CNN model name')
-    parser.add_argument('--pretrained', action='store_true', default=False,
-                        help='not using pretrained model when training')
-    parser.add_argument('--load_visual_model_path', type=str,
-                        default='.')
-    parser.add_argument('--visual_trained', action='store_true', default=True,
-                        help='Whether train visual extractor or not')
+    parser.add_argument('--visual_model_name', type=str, default='densenet201', help='CNN model name')
+    parser.add_argument('--pretrained', action='store_true', default=False, help='not using pretrained model when training')
+    parser.add_argument('--load_visual_model_path', type=str, default='.')
+    parser.add_argument('--visual_trained', action='store_true', default=True, help='Whether train visual extractor or not')
 
     # MLC
     parser.add_argument('--classes', type=int, default=210)
     parser.add_argument('--sementic_features_dim', type=int, default=512)
     parser.add_argument('--k', type=int, default=10)
-    parser.add_argument('--load_mlc_model_path', type=str,
-                        default='.')
+    parser.add_argument('--load_mlc_model_path', type=str, default='.')
     parser.add_argument('--mlc_trained', action='store_true', default=True)
 
     # Co-Attention
@@ -611,8 +606,7 @@ if __name__ == '__main__':
     parser.add_argument('--sent_version', type=str, default='v1')
     parser.add_argument('--sentence_num_layers', type=int, default=2)
     parser.add_argument('--dropout', type=float, default=0)
-    parser.add_argument('--load_sentence_model_path', type=str,
-                        default='.')
+    parser.add_argument('--load_sentence_model_path', type=str, default='.')
     parser.add_argument('--sentence_trained', action='store_true', default=True)
 
     # Word Model
