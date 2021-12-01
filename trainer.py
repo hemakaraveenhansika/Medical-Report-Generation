@@ -279,8 +279,8 @@ class DebuggerBase:
             'learning rate': lr
         }
 
-        for tag, value in info.items():
-            self.logger.scalar_summary(tag, value, epoch + 1)
+        # for tag, value in info.items():
+        #     self.logger.scalar_summary(tag, value, epoch + 1)
 
     def _init_logger(self):
         logger = Logger(os.path.join(self.model_dir, 'logs'))
