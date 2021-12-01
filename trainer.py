@@ -585,7 +585,7 @@ if __name__ == '__main__':
     # VisualFeatureExtractor
     parser.add_argument('--visual_model_name', type=str, default='resnet152',
                         help='CNN model name')
-    parser.add_argument('--pretrained', action='store_true', default=True,
+    parser.add_argument('--pretrained', action='store_true', default=False,
                         help='not using pretrained model when training')
     parser.add_argument('--load_visual_model_path', type=str,
                         default='.')

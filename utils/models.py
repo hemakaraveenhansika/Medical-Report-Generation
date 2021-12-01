@@ -7,7 +7,7 @@ import torchvision.models as models
 
 
 class VisualFeatureExtractor(nn.Module):
-    def __init__(self, model_name='densenet201', pretrained=False):
+    def __init__(self, model_name, pretrained):
         super(VisualFeatureExtractor, self).__init__()
         self.model_name = model_name
         self.pretrained = pretrained

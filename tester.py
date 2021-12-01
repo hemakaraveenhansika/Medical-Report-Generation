@@ -427,7 +427,7 @@ if __name__ == '__main__':
     # VisualFeatureExtractor
     parser.add_argument('--visual_model_name', type=str, default='densenet201',
                         help='CNN model name')
-    parser.add_argument('--pretrained', action='store_true', default=False,
+    parser.add_argument('--pretrained', action='store_true', default=True,
                         help='not using pretrained model when training')
 
     # MLC
