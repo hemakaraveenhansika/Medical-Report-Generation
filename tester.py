@@ -323,7 +323,7 @@ class CaptionSampler(object):
                     sementic_features_dim=self.args.sementic_features_dim,
                     fc_in_features=self.extractor.out_features,
                     k=self.args.k)
-
+        print()
         if self.model_state_dict is not None:
             print("MLC Loaded!")
             model.load_state_dict(self.model_state_dict['mlc'])

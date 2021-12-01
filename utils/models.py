@@ -53,6 +53,7 @@ class MLC(nn.Module):
                  sementic_features_dim,
                  fc_in_features,
                  k):
+        print(classes, sementic_features_dim, fc_in_features, k)
         super(MLC, self).__init__()
         self.classifier = nn.Linear(in_features=fc_in_features, out_features=classes)
         self.embed = nn.Embedding(classes, sementic_features_dim)
