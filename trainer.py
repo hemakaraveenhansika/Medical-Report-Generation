@@ -56,6 +56,7 @@ class DebuggerBase:
         self.writer.write("{}\n".format(self.args))
 
     def train(self):
+        print("train start")
         for epoch_id in range(self.start_epoch, self.args.epochs):
             print(f'Epoch {epoch_id}')
             train_tag_loss, train_stop_loss, train_word_loss, train_loss = self._epoch_train()
@@ -88,6 +89,7 @@ class DebuggerBase:
                       lr=self.optimizer.param_groups[0]['lr'],
                       epoch=epoch_id)
             print("train_loss, val_loss ", epoch_id, train_loss, val_loss)
+        print("train done")
 
     def _epoch_train(self):
         raise NotImplementedError
