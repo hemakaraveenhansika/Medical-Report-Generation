@@ -32,7 +32,7 @@ class ChestXrayDataSet(Dataset):
         with open(file_list, 'r') as f:
             for line in f:
                 items = line.split()
-                image_name = items[0]
+                image_name = items[0] + '.dcm'
                 label = items[1:]
                 label = [int(i) for i in label]
                 image_name = '{}.png'.format(image_name)
