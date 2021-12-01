@@ -394,7 +394,7 @@ if __name__ == '__main__':
     """
     # Path Argument
     parser.add_argument('--model_dir', type=str, default='./debug_models/v4_v3_no_bn/20180628-05:44')
-    parser.add_argument('--image_dir', type=str, default='./data/images',
+    parser.add_argument('--image_dir', type=str, default='/kaggle/input/chest-xrays-indiana-university/images/images_normalized',
                         help='the path for images')
     parser.add_argument('--caption_json', type=str, default='./data/new_data/debugging_captions.json',
                         help='path for captions')
