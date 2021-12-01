@@ -121,7 +121,7 @@ class DebuggerBase:
         if not os.path.exists(model_dir):
             os.makedirs(model_dir)
 
-        model_dir = os.path.join(model_dir, self._get_now())
+        # model_dir = os.path.join(model_dir, self._get_now())
 
         if not os.path.exists(model_dir):
             os.makedirs(model_dir)
