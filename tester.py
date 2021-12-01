@@ -397,11 +397,11 @@ if __name__ == '__main__':
     parser.add_argument('--model_dir', type=str, default='/kaggle/working/Medical-Report-Generation/report_v4_models/v4')
     parser.add_argument('--image_dir', type=str, default='/kaggle/input/chest-xrays-indiana-university/images/images_normalized',
                         help='the path for images')
-    parser.add_argument('--caption_json', type=str, default='./data/new_data/debugging_captions.json',
+    parser.add_argument('--caption_json', type=str, default='./data/new_data/captions.json',
                         help='path for captions')
     parser.add_argument('--vocab_path', type=str, default='./data/new_data/vocab.pkl',
                         help='the path for vocabulary object')
-    parser.add_argument('--file_lits', type=str, default='./data/new_data/debugging_data.txt',
+    parser.add_argument('--file_lits', type=str, default='./data/new_data/test_data.txt',
                         help='the path for test file list')
     parser.add_argument('--load_model_path', type=str, default='train_best_loss.pth.tar',
                         help='The path of loaded model')
@@ -452,7 +452,7 @@ if __name__ == '__main__':
     parser.add_argument('--s_max', type=int, default=6)
     parser.add_argument('--n_max', type=int, default=30)
 
-    parser.add_argument('--batch_size', type=int, default=8)
+    parser.add_argument('--batch_size', type=int, default=16)
 
     # Loss function
     parser.add_argument('--lambda_tag', type=float, default=10000)
