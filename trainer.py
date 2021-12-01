@@ -58,7 +58,7 @@ class DebuggerBase:
     def train(self):
         print("train start")
         for epoch_id in range(self.start_epoch, self.args.epochs):
-            print(f'Epoch {epoch_id}')
+            print('\n', f'Epoch {epoch_id}')
             train_tag_loss, train_stop_loss, train_word_loss, train_loss = self._epoch_train()
             val_tag_loss, val_stop_loss, val_word_loss, val_loss = self._epoch_val()
 
@@ -323,6 +323,7 @@ class DebuggerBase:
                     train_loss):
         def save_whole_model(_filename):
             self.writer.write("Saved Model in {}\n".format(_filename))
+            print("save whole model in", os.path.join(self.model_dir, "{}".format(_filename)))
             torch.save({'extractor': self.extractor.state_dict(),
                         'mlc': self.mlc.state_dict(),
                         'co_attention': self.co_attention.state_dict(),
