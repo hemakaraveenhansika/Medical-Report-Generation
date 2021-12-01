@@ -125,7 +125,7 @@ class DebuggerBase:
 
         if not os.path.exists(model_dir):
             os.makedirs(model_dir)
-
+        print(model_dir)
         return model_dir
 
     def _init_vocab(self):
