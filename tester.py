@@ -61,7 +61,7 @@ class CaptionSampler(object):
             batch_tag_loss = self.mse_criterion(tags, self.__to_var(label, requires_grad=False)).sum()
 
             sentence_states = None
-            prev_hidden_states = self.__to_var(torch.zeros(images.shape[0], 1, self.args.hidden_size))
+            prev_hidden_states = self.__to_var(torch.zeros(images.shape[0], 1, self.args.hidden_size, requires_grad=False))
 
             context = self.__to_var(torch.Tensor(captions).long(), requires_grad=False)
             prob_real = self.__to_var(torch.Tensor(prob).long(), requires_grad=False)
@@ -112,7 +112,7 @@ class CaptionSampler(object):
             tags, semantic_features = self.mlc.forward(avg_features)
 
             sentence_states = None
-            prev_hidden_states = self.__to_var(torch.zeros(images.shape[0], 1, self.args.hidden_size))
+            prev_hidden_states = self.__to_var(torch.zeros(images.shape[0], 1, self.args.hidden_size, requires_grad=False))
             pred_sentences = {}
             real_sentences = {}
             for i in image_id:
