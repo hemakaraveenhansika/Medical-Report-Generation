@@ -170,6 +170,7 @@ class CaptionSampler(object):
                     'Pred Sent': pred_sentences[id],
                     'Real Sent': real_sentences[id]
                 }
+                print(results[id])
 
         self.__save_json(results)
 
@@ -264,11 +265,13 @@ class CaptionSampler(object):
         return image_dir
 
     def __save_json(self, result):
-        result_path = os.path.join(self.args.model_dir, self.args.result_path)
+        # result_path = os.path.join(self.args.model_dir, self.args.result_path)
+        result_path = "/kaggle/working/Medical-Report-Generation/results"
         if not os.path.exists(result_path):
             os.makedirs(result_path)
         with open(os.path.join(result_path, '{}.json'.format(self.args.result_name)), 'w') as f:
             json.dump(result, f)
+        print("result saved in", result_path)
 
     def __load_mode_state_dict(self):
         try:
