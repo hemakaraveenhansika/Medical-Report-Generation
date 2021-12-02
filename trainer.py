@@ -379,7 +379,7 @@ class LSTMDebugger(DebuggerBase):
         # for i, (images, _, label, captions, prob) in tqdm(self.train_data_loader):
             batch_tag_loss, batch_stop_loss, batch_word_loss, batch_loss = 0, 0, 0, 0
             images = self._to_var(images)
-            # print("images", images.shape)
+            print(_)
 
             visual_features, avg_features = self.extractor.forward(images)
             tags, semantic_features = self.mlc.forward(avg_features)
