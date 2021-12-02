@@ -144,6 +144,8 @@ class CaptionSampler(object):
                     # print(id, type(array), array)
                     # pred_sentences[id][i] = self.__vec2sent(array.cpu().detach().numpy())
                     pred_sentences[id][i] = self.__vec2sent(array)
+                print("pred_sentences round", i)
+
             print("pred_sentences done")
 
             for id, array in zip(image_id, captions):
