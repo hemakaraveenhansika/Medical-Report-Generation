@@ -118,6 +118,8 @@ class CaptionSampler(object):
             for i in image_id:
                 pred_sentences[i] = {}
                 real_sentences[i] = {}
+            print("len", (real_sentences))
+            print("s_max", self.args.s_max)
 
             for i in range(self.args.s_max):
                 ctx, alpha_v, alpha_a = self.co_attention.forward(avg_features, semantic_features, prev_hidden_states)
@@ -421,7 +423,7 @@ if __name__ == '__main__':
                         help='path for captions')
     parser.add_argument('--vocab_path', type=str, default='./data/new_data/vocab.pkl',
                         help='the path for vocabulary object')
-    parser.add_argument('--file_lits', type=str, default='./data/new_data/test_data.txt',
+    parser.add_argument('--file_lits', type=str, default='./data/new_data/debugging_data.txt',
                         help='the path for test file list')
     parser.add_argument('--load_model_path', type=str, default='train_best_loss.pth.tar',
                         help='The path of loaded model')
