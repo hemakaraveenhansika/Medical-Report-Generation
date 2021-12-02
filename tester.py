@@ -121,11 +121,13 @@ class CaptionSampler(object):
 
             for i in range(self.args.s_max):
                 ctx, alpha_v, alpha_a = self.co_attention.forward(avg_features, semantic_features, prev_hidden_states)
+                print("ctx, alpha_v, alpha_a", i)
 
-                topic, p_stop, hidden_state, sentence_states = self.sentence_model.forward(ctx,
-                                                                                          prev_hidden_states,
-                                                                                          sentence_states)
+                topic, p_stop, hidden_state, sentence_states = self.sentence_model.forward(ctx, prev_hidden_states, sentence_states)
+                print("topic, p_stop, hidden_state", i)
+
                 p_stop = p_stop.squeeze(1)
+                print("p_stop", i)
                 p_stop = torch.max(p_stop, 1)[1].unsqueeze(1)
 
                 print("start_tokens round", i)
@@ -135,7 +137,7 @@ class CaptionSampler(object):
 
                 sampled_ids = self.word_model.sample(topic, start_tokens)
                 prev_hidden_states = hidden_state
-                print(type(sampled_ids), type(p_stop))
+                # print(type(sampled_ids), type(p_stop))
 
                 sampled_ids = sampled_ids * p_stop.cpu().numpy()
 

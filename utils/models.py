@@ -390,6 +390,7 @@ class WordLSTM(nn.Module):
     def sample(self, features, start_tokens):
         sampled_ids = np.zeros((np.shape(features)[0], self.n_max))
         sampled_ids[:, 0] = start_tokens.cpu().view(-1, )
+        # sampled_ids[:, 0] = start_tokens.view(-1, )
         predicted = start_tokens
         embeddings = features
         embeddings = embeddings
@@ -402,6 +403,7 @@ class WordLSTM(nn.Module):
             outputs = self.linear(hidden_states)
             predicted = torch.max(outputs, 1)[1]
             sampled_ids[:, i] = predicted.cpu()
+            # sampled_ids[:, i] = predicted
             predicted = predicted.unsqueeze(1)
         return sampled_ids
 
