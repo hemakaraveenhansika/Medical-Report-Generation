@@ -401,7 +401,7 @@ class WordLSTM(nn.Module):
             hidden_states = hidden_states[:, -1, :]
             outputs = self.linear(hidden_states)
             predicted = torch.max(outputs, 1)[1]
-            sampled_ids[:, i] = predicted
+            sampled_ids[:, i] = predicted.cpu()
             predicted = predicted.unsqueeze(1)
         return sampled_ids
 
