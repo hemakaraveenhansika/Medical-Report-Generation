@@ -134,7 +134,9 @@ class CaptionSampler(object):
 
                 sampled_ids = self.word_model.sample(topic, start_tokens)
                 prev_hidden_states = hidden_state
-                sampled_ids = sampled_ids * p_stop
+                print(type(sampled_ids), type(p_stop))
+
+                sampled_ids = sampled_ids * p_stop.cpu()
 
                 # self._generate_cam(image_id, visual_features, alpha_v, i)
 
