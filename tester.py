@@ -295,7 +295,9 @@ class CaptionSampler(object):
 
     def __init_transform(self):
         transform = transforms.Compose([
-            transforms.Resize((self.args.resize, self.args.resize)),
+            # transforms.Resize((self.args.resize, self.args.resize)),
+            transforms.Resize(self.args.resize),
+            transforms.RandomCrop(self.args.cam_size),
             transforms.ToTensor(),
             transforms.Normalize((0.485, 0.456, 0.406),
                                  (0.229, 0.224, 0.225))])
