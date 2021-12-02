@@ -1,7 +1,7 @@
 import time
 import pickle
 import argparse
-
+from tqdm import tqdm
 import torch
 import torch.optim as optim
 import torchvision.transforms as transforms
@@ -375,10 +375,11 @@ class LSTMDebugger(DebuggerBase):
         self.sentence_model.train()
         self.word_model.train()
 
-        for i, (images, _, label, captions, prob) in enumerate(self.train_data_loader):
+        # for i, (images, _, label, captions, prob) in enumerate(self.train_data_loader):
+        for images, _, label, captions, prob in tqdm(self.train_data_loader):
             batch_tag_loss, batch_stop_loss, batch_word_loss, batch_loss = 0, 0, 0, 0
             images = self._to_var(images)
-            print("images", images.shape)
+            # print("images", images.shape)
 
             visual_features, avg_features = self.extractor.forward(images)
             tags, semantic_features = self.mlc.forward(avg_features)
