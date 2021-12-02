@@ -188,7 +188,6 @@ class CoAttention(nn.Module):
 
     def v3(self, avg_features, semantic_features, h_sent) -> object:
         """
-
         :rtype: object
         """
         W_v = self.bn_v(self.W_v(avg_features))
