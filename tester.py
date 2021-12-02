@@ -141,7 +141,7 @@ class CaptionSampler(object):
                 # self._generate_cam(image_id, visual_features, alpha_v, i)
 
                 for id, array in zip(image_id, sampled_ids):
-                    print(id, type(array), array)
+                    # print(id, type(array), array)
                     # pred_sentences[id][i] = self.__vec2sent(array.cpu().detach().numpy())
                     pred_sentences[id][i] = self.__vec2sent(array)
 
@@ -149,6 +149,10 @@ class CaptionSampler(object):
                 for i, sent in enumerate(array):
                     real_sentences[id][i] = self.__vec2sent(sent)
 
+            print(image_id)
+            print(tags)
+            print(label)
+            print("load captions")
             for id, pred_tag, real_tag in zip(image_id, tags, label):
                 results[id] = {
                     'Real Tags': self.tagger.inv_tags2array(real_tag),
