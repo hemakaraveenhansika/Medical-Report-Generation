@@ -66,9 +66,9 @@ class MLC(nn.Module):
         self.classifier.bias.data.fill_(0)
 
     def forward(self, avg_features):
-        print("softmax avg_features", avg_features.shape)
+        # print("softmax avg_features", avg_features.shape)
         avg_classifier = self.classifier(avg_features)
-        print("avg_classifier", avg_classifier.shape)
+        # print("avg_classifier", avg_classifier.shape)
         # print(avg_classifier)
         tags = self.softmax(avg_classifier)
         semantic_features = self.embed(torch.topk(tags, self.k)[1])
