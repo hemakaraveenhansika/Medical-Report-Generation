@@ -61,7 +61,7 @@ class CaptionSampler(object):
             batch_tag_loss = self.mse_criterion(tags, self.__to_var(label, requires_grad=False)).sum()
 
             sentence_states = None
-            prev_hidden_states = self.__to_var(torch.zeros(images.shape[0], 1, self.args.hidden_size, requires_grad=False))
+            prev_hidden_states = self.__to_var(torch.zeros(images.shape[0], 1, self.args.hidden_size), requires_grad=False)
 
             context = self.__to_var(torch.Tensor(captions).long(), requires_grad=False)
             prob_real = self.__to_var(torch.Tensor(prob).long(), requires_grad=False)
@@ -112,7 +112,7 @@ class CaptionSampler(object):
             tags, semantic_features = self.mlc.forward(avg_features)
 
             sentence_states = None
-            prev_hidden_states = self.__to_var(torch.zeros(images.shape[0], 1, self.args.hidden_size), requires_grad=False)
+            prev_hidden_states = self.__to_var(torch.zeros(images.shape[0], 1, self.args.hidden_size))
             pred_sentences = {}
             real_sentences = {}
             for i in image_id:
@@ -141,7 +141,7 @@ class CaptionSampler(object):
                 # self._generate_cam(image_id, visual_features, alpha_v, i)
 
                 for id, array in zip(image_id, sampled_ids):
-                    # print(id, type(array), array)
+                    print(id, type(array), array)
                     # pred_sentences[id][i] = self.__vec2sent(array.cpu().detach().numpy())
                     pred_sentences[id][i] = self.__vec2sent(array)
 
@@ -311,7 +311,7 @@ class CaptionSampler(object):
                                  (0.229, 0.224, 0.225))])
         return transform
 
-    def __to_var(self, x, requires_grad):
+    def __to_var(self, x, requires_grad=True):
         if self.args.cuda:
             x = x.cuda()
         return Variable(x, requires_grad=requires_grad)
