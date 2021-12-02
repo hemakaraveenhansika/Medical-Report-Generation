@@ -32,7 +32,7 @@ class VisualFeatureExtractor(nn.Module):
             out_features = densenet.classifier.in_features
         linear = nn.Linear(in_features=out_features, out_features=out_features)
         bn = nn.BatchNorm1d(num_features=out_features, momentum=0.1)
-        print("out_features", out_features)
+        # print("out_features", out_features)
         return model, out_features, func, bn, linear
 
     def forward(self, images):
@@ -43,7 +43,7 @@ class VisualFeatureExtractor(nn.Module):
         visual_features = self.model(images)
         avg_features = self.avg_func(visual_features).squeeze()
         # avg_features = self.activation(self.bn(self.linear(avg_features)))
-        print("visual_features", visual_features.shape, "-", "avg_features", avg_features.shape)
+        # print("visual_features", visual_features.shape, "-", "avg_features", avg_features.shape)
         return visual_features, avg_features
 
 

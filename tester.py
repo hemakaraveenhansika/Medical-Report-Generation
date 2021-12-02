@@ -106,7 +106,7 @@ class CaptionSampler(object):
 
         for images, image_id, label, captions, _ in progress_bar:
             images = self.__to_var(images, requires_grad=False)
-            print("images", images.shape)
+            # print("images", images.shape)
 
             visual_features, avg_features = self.extractor.forward(images)
             tags, semantic_features = self.mlc.forward(avg_features)
@@ -118,21 +118,21 @@ class CaptionSampler(object):
             for i in image_id:
                 pred_sentences[i] = {}
                 real_sentences[i] = {}
-            print("len", (real_sentences))
-            print("s_max", self.args.s_max)
+            # print("len", (real_sentences))
+            # print("s_max", self.args.s_max)
 
             for i in range(self.args.s_max):
                 ctx, alpha_v, alpha_a = self.co_attention.forward(avg_features, semantic_features, prev_hidden_states)
-                print("ctx, alpha_v, alpha_a", i)
+                # print("ctx, alpha_v, alpha_a", i)
 
                 topic, p_stop, hidden_state, sentence_states = self.sentence_model.forward(ctx, prev_hidden_states, sentence_states)
-                print("topic, p_stop, hidden_state", i)
+                # print("topic, p_stop, hidden_state", i)
 
                 p_stop = p_stop.squeeze(1)
-                print("p_stop", i)
+                # print("p_stop", i)
                 p_stop = torch.max(p_stop, 1)[1].unsqueeze(1)
 
-                print("start_tokens round", i)
+                # print("start_tokens round", i)
                 start_tokens = np.zeros((topic.shape[0], 1))
                 start_tokens[:, 0] = self.vocab('<start>')
                 start_tokens = self.__to_var(torch.Tensor(start_tokens).long(), requires_grad=False)
@@ -149,19 +149,19 @@ class CaptionSampler(object):
                     # print(id, type(array), array)
                     # pred_sentences[id][i] = self.__vec2sent(array.cpu().detach().numpy())
                     pred_sentences[id][i] = self.__vec2sent(array)
-                print("pred_sentences round", i)
+                # print("pred_sentences round", i)
 
-            print("pred_sentences done")
+            # print("pred_sentences done")
 
             for id, array in zip(image_id, captions):
                 for i, sent in enumerate(array):
                     real_sentences[id][i] = self.__vec2sent(sent)
-            print("real_sentences done")
+            # print("real_sentences done")
 
-            print(image_id)
-            print(tags)
-            print(label)
-            print("load captions")
+            # print(image_id)
+            # print(tags)
+            # print(label)
+            # print("load captions")
 
             for id, pred_tag, real_tag in zip(image_id, tags, label):
                 results[id] = {
@@ -442,7 +442,7 @@ if __name__ == '__main__':
     # Saved result
     parser.add_argument('--result_path', type=str, default='results',
                         help='the path for storing results')
-    parser.add_argument('--result_name', type=str, default='debug',
+    parser.add_argument('--result_name', type=str, default='output_captions',
                         help='the name of results')
 
     """
