@@ -136,7 +136,7 @@ class CaptionSampler(object):
                 prev_hidden_states = hidden_state
                 print(type(sampled_ids), type(p_stop))
 
-                sampled_ids = sampled_ids * p_stop.numpy()
+                sampled_ids = sampled_ids * p_stop.cpu().numpy()
 
                 # self._generate_cam(image_id, visual_features, alpha_v, i)
 
