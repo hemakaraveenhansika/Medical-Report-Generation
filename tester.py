@@ -106,6 +106,8 @@ class CaptionSampler(object):
 
         for images, image_id, label, captions, _ in progress_bar:
             images = self.__to_var(images, requires_grad=False)
+            print("images", images.shape)
+
             visual_features, avg_features = self.extractor.forward(images)
             tags, semantic_features = self.mlc.forward(avg_features)
 
@@ -299,7 +301,7 @@ class CaptionSampler(object):
                                  (0.229, 0.224, 0.225))])
         return transform
 
-    def __to_var(self, x, requires_grad=True):
+    def __to_var(self, x, requires_grad):
         if self.args.cuda:
             x = x.cuda()
         return Variable(x, requires_grad=requires_grad)

@@ -43,7 +43,7 @@ class VisualFeatureExtractor(nn.Module):
         visual_features = self.model(images)
         avg_features = self.avg_func(visual_features).squeeze()
         # avg_features = self.activation(self.bn(self.linear(avg_features)))
-        print("avg_features", avg_features.shape)
+        print("visual_features", visual_features.shape, "-", "avg_features", avg_features.shape)
         return visual_features, avg_features
 
 
@@ -68,7 +68,8 @@ class MLC(nn.Module):
     def forward(self, avg_features):
         print("softmax avg_features", avg_features.shape)
         avg_classifier = self.classifier(avg_features)
-        print(avg_classifier)
+        print("avg_classifier", avg_classifier.shape)
+        # print(avg_classifier)
         tags = self.softmax(avg_classifier)
         semantic_features = self.embed(torch.topk(tags, self.k)[1])
         return tags, semantic_features
