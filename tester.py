@@ -128,6 +128,7 @@ class CaptionSampler(object):
                 p_stop = p_stop.squeeze(1)
                 p_stop = torch.max(p_stop, 1)[1].unsqueeze(1)
 
+                print("start_tokens round", i)
                 start_tokens = np.zeros((topic.shape[0], 1))
                 start_tokens[:, 0] = self.vocab('<start>')
                 start_tokens = self.__to_var(torch.Tensor(start_tokens).long(), requires_grad=False)
