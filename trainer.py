@@ -622,7 +622,7 @@ if __name__ == '__main__':
     """
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--learning_rate', type=int, default=0.001)
-    parser.add_argument('--epochs', type=int, default=4)
+    parser.add_argument('--epochs', type=int, default=2)
 
     parser.add_argument('--clip', type=float, default=-1,
                         help='gradient clip, -1 means no clip (default: 0.35)')
