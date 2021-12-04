@@ -165,14 +165,28 @@ class CaptionSampler(object):
 
             for id, pred_tag, real_tag in zip(image_id, tags, label):
                 results[id] = {
-                    'Real Tags': self.tagger.inv_tags2array(real_tag),
-                    'Pred Tags': self.tagger.array2tags(torch.topk(pred_tag, self.args.k)[1].cpu().detach().numpy()),
-                    'Pred Sent': pred_sentences[id],
-                    'Real Sent': real_sentences[id]
+                    'Real Tags': ", ".join(self.tagger.inv_tags2array(real_tag)) + "\n",
+                    'Pred Tags': ", ".join(self.tagger.array2tags(torch.topk(pred_tag, self.args.k)[1].cpu().detach().numpy())) + "\n",
+                    'Pred Sent': self.get_sentence(pred_sentences[id]) + "\n",
+                    'Real Sent': self.get_sentence(real_sentences[id]) + "\n\n"
                 }
                 print(results[id])
 
         self.__save_json(results)
+
+    def get_sentence(self, item):
+        sentences = []
+        for i in range(len(item)):
+            try:
+                sentence = item[str(i)]
+            except Exception as _:
+                sentence = ""
+
+            sentences.append(sentence)
+        caption = ". ".join(sentences)
+
+        return caption
+
 
     # def sample(self, image_file):
     #     self.extractor.eval()
