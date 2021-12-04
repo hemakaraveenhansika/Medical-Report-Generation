@@ -7,6 +7,8 @@ import cv2
 
 import torch
 import torchvision.transforms as transforms
+import nltk.translate.bleu_score as bleu
+
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
 
@@ -103,6 +105,8 @@ class CaptionSampler(object):
 
         progress_bar = tqdm(self.data_loader, desc='Generating')
         results = {}
+        bleu_score_tot = 0
+        bleu_score_final = 0
 
         for images, image_id, label, captions, _ in progress_bar:
             images = self.__to_var(images, requires_grad=False)
@@ -164,13 +168,25 @@ class CaptionSampler(object):
             # print("load captions")
 
             for id, pred_tag, real_tag in zip(image_id, tags, label):
+
+                real_sent = self.get_sentence(real_sentences[id])
+                pred_sent = self.get_sentence(pred_sentences[id])
+                # bleu_score = self.get_bleu_score(real_sent, pred_sent)
+                # bleu_score_tot += bleu_score
+
                 results[id] = {
-                    'Real Tags': ", ".join(self.tagger.inv_tags2array(real_tag)) + "\n",
-                    'Pred Tags': ", ".join(self.tagger.array2tags(torch.topk(pred_tag, self.args.k)[1].cpu().detach().numpy())) + "\n",
-                    'Pred Sent': self.get_sentence(pred_sentences[id]) + "\n",
-                    'Real Sent': self.get_sentence(real_sentences[id]) + "\n\n"
+                    'Real Tags': ", ".join(self.tagger.inv_tags2array(real_tag)),
+                    'Real Sent': real_sent,
+                    'Pred Tags': ", ".join(self.tagger.array2tags(torch.topk(pred_tag, self.args.k)[1].cpu().detach().numpy())),
+                    'Pred Sent': pred_sent
+                    # 'bleu_score': bleu_score
                 }
-                print(results[id])
+
+                print("\n", results[id])
+
+            # bleu_score_final = bleu_score_tot/len(real_sentences)
+            # results["score"] = {"bleu_score" : bleu_score_final}
+            # print("\nBleu score is : ", bleu_score_final)
 
         self.__save_json(results)
 
@@ -178,7 +194,7 @@ class CaptionSampler(object):
         sentences = []
         for i in range(len(item)):
             try:
-                sentence = item[str(i)]
+                sentence = item[i]
             except Exception as _:
                 sentence = ""
 
@@ -186,6 +202,10 @@ class CaptionSampler(object):
         caption = ". ".join(sentences)
 
         return caption
+
+    def get_bleu_score(self, reference, candidate ):
+        bleu_score = bleu.sentence_bleu([reference.split()], candidate.split() )
+        return bleu_score
 
 
     # def sample(self, image_file):
