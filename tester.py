@@ -171,22 +171,22 @@ class CaptionSampler(object):
 
                 real_sent = self.get_sentence(real_sentences[id])
                 pred_sent = self.get_sentence(pred_sentences[id])
-                # bleu_score = self.get_bleu_score(real_sent, pred_sent)
-                # bleu_score_tot += bleu_score
+                bleu_score = self.get_sentence_bleu_score(real_sent, pred_sent)
+                bleu_score_tot += bleu_score
 
                 results[id] = {
                     'Real Tags': ", ".join(self.tagger.inv_tags2array(real_tag)),
                     'Real Sent': real_sent,
                     'Pred Tags': ", ".join(self.tagger.array2tags(torch.topk(pred_tag, self.args.k)[1].cpu().detach().numpy())),
-                    'Pred Sent': pred_sent
-                    # 'bleu_score': bleu_score
+                    'Pred Sent': pred_sent,
+                    'Sentence bleu_score': bleu_score
                 }
 
                 print("\n", results[id])
 
-            # bleu_score_final = bleu_score_tot/len(real_sentences)
-            # results["score"] = {"bleu_score" : bleu_score_final}
-            # print("\nBleu score is : ", bleu_score_final)
+            bleu_score_final = bleu_score_tot/len(real_sentences)
+            results["score"] = {"bleu_score" : bleu_score_final}
+            print("\nBleu score is : ", bleu_score_final)
 
         self.__save_json(results)
 
@@ -203,7 +203,11 @@ class CaptionSampler(object):
 
         return caption
 
-    def get_bleu_score(self, reference, candidate ):
+    def get_sentence_bleu_score(self, reference, candidate ):
+        reference = reference.replace(".", "")
+        candidate = candidate.replace(".", "")
+        candidate = candidate.replace("<unk>", "")
+
         bleu_score = bleu.sentence_bleu([reference.split()], candidate.split() )
         return bleu_score
 
