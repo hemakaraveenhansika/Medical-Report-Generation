@@ -82,7 +82,7 @@ def collate_fn(data):
 
     targets = np.zeros((len(captions), max_sentence_num + 1, max_word_num))
     prob = np.zeros((len(captions), max_sentence_num + 1))
-
+    print(captions)
     for i, caption in enumerate(captions):
         for j, sentence in enumerate(caption):
             targets[i, j, :len(sentence)] = sentence[:]
