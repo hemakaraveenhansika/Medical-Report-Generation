@@ -50,7 +50,7 @@ class ChestXrayDataSet(Dataset):
             text = self.caption[image_name]
         except Exception as err:
             text = 'normal. '
-        print("captions", text)
+
         target = list()
         max_word_num = 0
         for i, sentence in enumerate(text.split('. ')):

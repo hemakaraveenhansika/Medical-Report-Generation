@@ -8,6 +8,7 @@ import torchvision.transforms as transforms
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
+from transformers import BertTokenizer
 
 from utils.models import *
 from utils.dataset import *
@@ -36,6 +37,7 @@ class DebuggerBase:
         self.train_transform = self._init_train_transform()
         self.val_transform = self._init_val_transform()
         self.vocab = self._init_vocab()
+        self.bert_tokenizer = self._init_bert_tokenizer()
         self.model_state_dict = self._load_mode_state_dict()
 
         self.train_data_loader = self._init_data_loader(self.args.train_file_list, self.train_transform)
@@ -136,6 +138,11 @@ class DebuggerBase:
         self.writer.write("Vocab Size:{}\n".format(len(vocab)))
 
         return vocab
+
+    def _init_bert_tokenizer(self):
+        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+
+        return tokenizer
 
     def _load_mode_state_dict(self):
         self.start_epoch = 0
@@ -402,20 +409,21 @@ class LSTMDebugger(DebuggerBase):
 
         # for i, (images, _, label, captions, prob) in enumerate(self.train_data_loader):
         for images, image_id, label, captions, prob, text in tqdm(self.train_data_loader):
+            print("images", images.shape)
+            print("text_list", len(list(text)))
+            print("text_list", list(text))
+
             batch_tag_loss, batch_stop_loss, batch_word_loss, batch_loss = 0, 0, 0, 0
             images = self._to_var(images)
+            bert_tokens = self._to_var(self.bert_tokenizer(list(text), return_tensors="pt", padding=True, truncation=True))
             context = self._to_var(torch.Tensor(captions).long(), requires_grad=False)
             prob_real = self._to_var(torch.Tensor(prob).long(), requires_grad=False)
-
-            print("images", images.shape)
-            print("context.shape", context.shape)
-            print("text_list", text)
 
             visual_features, avg_features = self.extractor.forward(images)
             print("visual_features.shape", visual_features.shape)
             print("avg_features.shape", avg_features.shape)
 
-            text_features = self.bert_encoder.forward(context)
+            text_features = self.bert_encoder.forward(bert_tokens)
             print("text_features.shape", text_features.shape)
             print("text_features", text_features)
             tags, semantic_features = self.mlc.forward(avg_features)
