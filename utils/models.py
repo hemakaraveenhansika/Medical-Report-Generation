@@ -5,7 +5,7 @@ import numpy as np
 from torch.autograd import Variable
 import torchvision.models as models
 import torch.nn.functional as F
-from transformers import AutoModel
+from transformers import BertModel
 
 class VisualFeatureExtractor(nn.Module):
     def __init__(self, model_name, pretrained):
@@ -421,7 +421,7 @@ class BertClassfier(nn.Module):
 
     def _get_bert_basemodel(self, bert_model_name, freeze_layers):
         try:
-            model = AutoModel.from_pretrained(bert_model_name)  # , return_dict=True)
+            model = BertModel.from_pretrained(bert_model_name)  # , return_dict=True)
             # print("Image feature extractor:", bert_model_name)
         except:
             raise ("Invalid model name. Check the config file and pass a BERT model from transformers lybrary")
