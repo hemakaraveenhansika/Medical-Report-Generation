@@ -29,6 +29,12 @@ class DebuggerBase:
         self.min_train_stop_loss = 1000000
         self.min_train_word_loss = 10000000
 
+        self.temperature = 0.1
+        self.use_cosine_similarity = True
+        self.alpha_weight = 0.75
+
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
         self.params = None
 
         self._init_model_path()
@@ -56,7 +62,10 @@ class DebuggerBase:
         self.optimizer = self._init_optimizer()
         self.scheduler = self._init_scheduler()
         self.logger = self._init_logger()
+        self.nt_xent_criterion = self._init_nt_xent()
+
         self.writer.write("{}\n".format(self.args))
+
 
     def train(self):
         print("train start")
@@ -318,6 +327,12 @@ class DebuggerBase:
         logger = Logger(os.path.join(self.model_dir, 'logs'))
         return logger
 
+    def _init_nt_xent(self):
+        nt_xent = NTXentLoss(self.device, self.args.batch_size, self.temperature, self.use_cosine_similarity, self.alpha_weight)
+        if self.args.cuda:
+            nt_xent = nt_xent.cuda()
+        return nt_xent
+
     def _init_writer(self):
         writer = open(os.path.join(self.model_dir, 'logs.txt'), 'w')
         return writer
@@ -409,9 +424,6 @@ class LSTMDebugger(DebuggerBase):
 
         # for i, (images, _, label, captions, prob) in enumerate(self.train_data_loader):
         for images, image_id, label, captions, prob, text in tqdm(self.train_data_loader):
-            print("images", images.shape)
-            print("text_list", len(list(text)))
-            print("text_list", list(text))
 
             batch_tag_loss, batch_stop_loss, batch_word_loss, batch_loss = 0, 0, 0, 0
             images = self._to_var(images)
@@ -422,14 +434,16 @@ class LSTMDebugger(DebuggerBase):
             prob_real = self._to_var(torch.Tensor(prob).long(), requires_grad=False)
 
             visual_features, avg_features = self.extractor.forward(images)
+            text_features = self.bert_encoder.forward(bert_tokens)
+            tags, semantic_features = self.mlc.forward(avg_features)
+
             print("visual_features.shape", visual_features.shape)
             print("avg_features.shape", avg_features.shape)
-
-            text_features = self.bert_encoder.forward(bert_tokens)
-
-            tags, semantic_features = self.mlc.forward(avg_features)
             print("semantic_features.shape", semantic_features.shape)
             print("text_features.shape", text_features.shape)
+
+            loss = self.nt_xent_criterion(avg_features, text_features)
+            print("contrastive loss :", loss)
 
             batch_tag_loss = self.mse_criterion(tags, self._to_var(label, requires_grad=False)).sum()
 
