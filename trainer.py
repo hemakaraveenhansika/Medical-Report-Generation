@@ -416,8 +416,8 @@ class LSTMDebugger(DebuggerBase):
             batch_tag_loss, batch_stop_loss, batch_word_loss, batch_loss = 0, 0, 0, 0
             images = self._to_var(images)
             bert_tokens = self.bert_tokenizer(list(text), return_tensors="pt", padding=True, truncation=True)
-            print("bert_tokens", bert_tokens)
-            bert_tokens = self._to_var(bert_tokens, requires_grad=False)
+            bert_tokens = bert_tokens.to('cuda' if torch.cuda.is_available() else 'cpu')
+            # bert_tokens = self._to_var(bert_tokens, requires_grad=False)
             context = self._to_var(torch.Tensor(captions).long(), requires_grad=False)
             prob_real = self._to_var(torch.Tensor(prob).long(), requires_grad=False)
 
