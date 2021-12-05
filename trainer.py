@@ -409,9 +409,11 @@ class LSTMDebugger(DebuggerBase):
 
             print("images", images.shape)
             print("context.shape", context.shape)
-            print("context", context)
 
             visual_features, avg_features = self.extractor.forward(images)
+            print("visual_features.shape", visual_features.shape)
+            print("avg_features.shape", avg_features.shape)
+
             text_features = self.bert_encoder.forward(context)
             print("text_features.shape", text_features.shape)
             print("text_features", text_features)
