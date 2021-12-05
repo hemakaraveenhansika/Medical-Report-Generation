@@ -451,6 +451,7 @@ class BertClassfier(nn.Module):
         - Nils Reimers, Iryna Gurevych. Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks
         https://www.sbert.net
         """
+        print("encoded_inputs.shape", encoded_inputs.shape)
         outputs = self.bert_model(encoded_inputs)
         # print("text_encoder outputs")
         # print(outputs)
