@@ -42,6 +42,7 @@ class DebuggerBase:
         self.val_data_loader = self._init_data_loader(self.args.val_file_list, self.val_transform)
 
         self.extractor = self._init_visual_extractor()
+        self.bert_encoder = self._init_bert_encoder()
         self.mlc = self._init_mlc()
         self.co_attention = self._init_co_attention()
         self.sentence_model = self._init_sentence_model()
@@ -171,6 +172,29 @@ class DebuggerBase:
         if self.args.cuda:
             model = model.cuda()
 
+        return model
+
+    def _init_bert_encoder(self):
+        model = BertClassfier(bert_base_model='bert-base-uncased', out_dim=512, freeze_layers=[0,1,2,3,4,5])
+
+        try:
+            model_state = torch.load(self.args.load_mlc_model_path)
+            model.load_state_dict(model_state['model'])
+            self.writer.write("[Load BERT model Succeed!]\n")
+        except Exception as err:
+            self.writer.write("[Load BERT model Failed {}!]\n".format(err))
+
+        if not self.args.bert_trained:
+            for i, param in enumerate(model.parameters()):
+                param.requires_grad = False
+        else:
+            if self.params:
+                self.params += list(model.parameters())
+            else:
+                self.params = list(model.parameters())
+
+        if self.args.cuda:
+            model = model.cuda()
         return model
 
     def _init_mlc(self):
@@ -370,6 +394,7 @@ class LSTMDebugger(DebuggerBase):
     def _epoch_train(self):
         tag_loss, stop_loss, word_loss, loss = 0, 0, 0, 0
         self.extractor.train()
+        self.bert_encoder.train()
         self.mlc.train()
         self.co_attention.train()
         self.sentence_model.train()
@@ -379,9 +404,17 @@ class LSTMDebugger(DebuggerBase):
         for images, _, label, captions, prob in tqdm(self.train_data_loader):
             batch_tag_loss, batch_stop_loss, batch_word_loss, batch_loss = 0, 0, 0, 0
             images = self._to_var(images)
-            # print("images", images.shape)
+            context = self._to_var(torch.Tensor(captions).long(), requires_grad=False)
+            prob_real = self._to_var(torch.Tensor(prob).long(), requires_grad=False)
+
+            print("images", images.shape)
+            print("context.shape", context.shape)
+            print("context", context)
 
             visual_features, avg_features = self.extractor.forward(images)
+            text_features = self.bert_encoder.forward(context)
+            print("text_features.shape", text_features.shape)
+            print("text_features", text_features)
             tags, semantic_features = self.mlc.forward(avg_features)
 
             batch_tag_loss = self.mse_criterion(tags, self._to_var(label, requires_grad=False)).sum()
@@ -389,8 +422,7 @@ class LSTMDebugger(DebuggerBase):
             sentence_states = None
             prev_hidden_states = self._to_var(torch.zeros(images.shape[0], 1, self.args.hidden_size))
 
-            context = self._to_var(torch.Tensor(captions).long(), requires_grad=False)
-            prob_real = self._to_var(torch.Tensor(prob).long(), requires_grad=False)
+
 
             for sentence_index in range(captions.shape[1]):
                 ctx, _, _ = self.co_attention.forward(avg_features,
@@ -589,6 +621,9 @@ if __name__ == '__main__':
     parser.add_argument('--pretrained', action='store_true', default=False, help='not using pretrained model when training')
     parser.add_argument('--load_visual_model_path', type=str, default='.')
     parser.add_argument('--visual_trained', action='store_true', default=True, help='Whether train visual extractor or not')
+
+    #BERT
+    parser.add_argument('--bert_trained', action='store_true', default=True)
 
     # MLC
     parser.add_argument('--classes', type=int, default=210)

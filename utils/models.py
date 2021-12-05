@@ -4,7 +4,8 @@ import torchvision
 import numpy as np
 from torch.autograd import Variable
 import torchvision.models as models
-
+import torch.nn.functional as F
+from transformers import AutoModel
 
 class VisualFeatureExtractor(nn.Module):
     def __init__(self, model_name, pretrained):
@@ -32,7 +33,7 @@ class VisualFeatureExtractor(nn.Module):
             out_features = densenet.classifier.in_features
         linear = nn.Linear(in_features=out_features, out_features=out_features)
         bn = nn.BatchNorm1d(num_features=out_features, momentum=0.1)
-        # print("out_features", out_features)
+        print("out_features", out_features)
         return model, out_features, func, bn, linear
 
     def forward(self, images):
@@ -407,6 +408,61 @@ class WordLSTM(nn.Module):
         return sampled_ids
 
 
+# Create the BertClassfier class
+class BertClassfier(nn.Module):
+    def __init__(self, bert_base_model, out_dim, freeze_layers):
+        super(BertClassfier, self).__init__()
+        # init BERT
+        self.bert_model = self._get_bert_basemodel(bert_base_model, freeze_layers)
+        # projection MLP for BERT model
+        self.bert_l1 = nn.Linear(768, 768)  # 768 is the size of the BERT embbedings
+        self.bert_l2 = nn.Linear(768, out_dim)  # 768 is the size of the BERT embbedings
+
+
+    def _get_bert_basemodel(self, bert_model_name, freeze_layers):
+        try:
+            model = AutoModel.from_pretrained(bert_model_name)  # , return_dict=True)
+            # print("Image feature extractor:", bert_model_name)
+        except:
+            raise ("Invalid model name. Check the config file and pass a BERT model from transformers lybrary")
+
+        if freeze_layers is not None:
+            for layer_idx in freeze_layers:
+                for param in list(model.encoder.layer[layer_idx].parameters()):
+                    param.requires_grad = False
+        return model
+
+    def mean_pooling(self, model_output, attention_mask):
+        """
+        Mean Pooling - Take attention mask into account for correct averaging
+        Reference: https://www.sbert.net/docs/usage/computing_sentence_embeddings.html
+        """
+        token_embeddings = model_output[0]  # First element of model_output contains all token embeddings
+        input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+        sum_embeddings = torch.sum(token_embeddings * input_mask_expanded, 1)
+        sum_mask = torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+        return sum_embeddings / sum_mask
+
+    def forward(self, encoded_inputs):
+        """
+        Obter os inputs e em seguida extrair os hidden layers e fazer a media de todos os tokens
+        Fontes:
+        - https://github.com/BramVanroy/bert-for-inference/blob/master/introduction-to-bert.ipynb
+        - Nils Reimers, Iryna Gurevych. Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks
+        https://www.sbert.net
+        """
+        outputs = self.bert_model(**encoded_inputs)
+        # print("text_encoder outputs")
+        # print(outputs)
+
+        with torch.no_grad():
+            sentence_embeddings = self.mean_pooling(outputs, encoded_inputs['attention_mask']).half()
+            x = self.bert_l1(sentence_embeddings)
+            x = F.relu(x)
+            out_emb = self.bert_l2(x)
+
+        return out_emb
+
 if __name__ == '__main__':
     import torchvision.transforms as transforms
 
@@ -414,6 +470,7 @@ if __name__ == '__main__':
     warnings.filterwarnings("ignore")
 #
     extractor = VisualFeatureExtractor(model_name='densenet201')
+    bert_encoder = BertClassfier(bert_base_model='bert-base-uncased', out_dim=512, freeze_layers=[0,1,2,3,4,5])
     mlc = MLC(fc_in_features=extractor.out_features)
     co_att = CoAttention(visual_size=extractor.out_features)
     sent_lstm = SentenceLSTM()
@@ -447,9 +504,11 @@ if __name__ == '__main__':
     print("hidden_states:{}".format(hidden_state.shape))
 
     visual_features, avg_features = extractor.forward(images)
+    text_features = bert_encoder.forward(captions)
 
     print("visual_features:{}".format(visual_features.shape))
     print("avg features:{}".format(avg_features.shape))
+    print("text_features:{}".format(text_features.shape))
 
     tags, semantic_features = mlc.forward(avg_features)
 
