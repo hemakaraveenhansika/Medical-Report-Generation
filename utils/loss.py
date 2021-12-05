@@ -76,3 +76,8 @@ class LossFactory(object):
         # if self.type == 'NLL' or self.type == 'WARP' or self.type == 'MSR':
         #     target /= torch.sum(target, 1).view(-1, 1)
         return self.loss(output, target)
+
+
+class NoiseContrastiveEstimatorLoss():
+    def __init__(self):
+        loss = 0.0
