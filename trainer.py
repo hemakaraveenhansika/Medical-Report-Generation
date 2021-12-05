@@ -426,9 +426,10 @@ class LSTMDebugger(DebuggerBase):
             print("avg_features.shape", avg_features.shape)
 
             text_features = self.bert_encoder.forward(bert_tokens)
-            print("text_features.shape", text_features.shape)
-            print("text_features", text_features)
+
             tags, semantic_features = self.mlc.forward(avg_features)
+            print("semantic_features.shape", semantic_features.shape)
+            print("text_features.shape", text_features.shape)
 
             batch_tag_loss = self.mse_criterion(tags, self._to_var(label, requires_grad=False)).sum()
 

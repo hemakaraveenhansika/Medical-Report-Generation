@@ -451,7 +451,7 @@ class BertClassfier(nn.Module):
         - Nils Reimers, Iryna Gurevych. Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks
         https://www.sbert.net
         """
-        print("encoded_inputs", encoded_inputs)
+        # print("encoded_inputs", encoded_inputs)
         outputs = self.bert_model(**encoded_inputs)
         # print("text_encoder outputs")
         # print(outputs)
@@ -459,8 +459,8 @@ class BertClassfier(nn.Module):
         with torch.no_grad():
             v = self.mean_pooling(outputs, encoded_inputs['attention_mask'])
             sentence_embeddings = v.to(dtype=torch.float16)
-            print(v.dtype)
-            print(sentence_embeddings.dtype)
+            # print(v.dtype)
+            # print(sentence_embeddings.dtype)
             # sentence_embeddings = v.half()
             x = self.bert_l1(v)
             x = F.relu(x)
