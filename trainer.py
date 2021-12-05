@@ -409,7 +409,7 @@ class LSTMDebugger(DebuggerBase):
 
             print("images", images.shape)
             print("context.shape", context.shape)
-            print("captions", captions)
+
 
             visual_features, avg_features = self.extractor.forward(images)
             print("visual_features.shape", visual_features.shape)
