@@ -458,8 +458,8 @@ class BertClassfier(nn.Module):
 
         with torch.no_grad():
             v = self.mean_pooling(outputs, encoded_inputs['attention_mask'])
-            print(v)
-            print(v.half())
+            print(v.dtype)
+            print((v.half()).dtype)
             sentence_embeddings = v.half()
             x = self.bert_l1(sentence_embeddings)
             x = F.relu(x)
