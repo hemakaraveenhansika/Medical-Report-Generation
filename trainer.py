@@ -175,7 +175,7 @@ class DebuggerBase:
         return model
 
     def _init_bert_encoder(self):
-        model = BertClassfier(bert_base_model='bert-base-uncased', out_dim=512, freeze_layers=[0,1,2,3,4,5])
+        model = BertClassfier(bert_base_model='bert-base-uncased', out_dim=1920, freeze_layers=[0,1,2,3,4,5])
 
         try:
             model_state = torch.load(self.args.load_mlc_model_path)

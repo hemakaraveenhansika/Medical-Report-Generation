@@ -470,7 +470,7 @@ if __name__ == '__main__':
     warnings.filterwarnings("ignore")
 #
     extractor = VisualFeatureExtractor(model_name='densenet201')
-    bert_encoder = BertClassfier(bert_base_model='bert-base-uncased', out_dim=512, freeze_layers=[0,1,2,3,4,5])
+    bert_encoder = BertClassfier(bert_base_model='bert-base-uncased', out_dim=1920, freeze_layers=[0,1,2,3,4,5])
     mlc = MLC(fc_in_features=extractor.out_features)
     co_att = CoAttention(visual_size=extractor.out_features)
     sent_lstm = SentenceLSTM()
