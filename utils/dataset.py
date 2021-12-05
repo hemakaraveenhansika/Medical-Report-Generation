@@ -50,7 +50,7 @@ class ChestXrayDataSet(Dataset):
             text = self.caption[image_name]
         except Exception as err:
             text = 'normal. '
-
+        print("captions", text)
         target = list()
         max_word_num = 0
         for i, sentence in enumerate(text.split('. ')):
@@ -67,14 +67,14 @@ class ChestXrayDataSet(Dataset):
                 max_word_num = len(tokens)
             target.append(tokens)
         sentence_num = len(target)
-        return image, image_name, list(label / np.sum(label)), target, sentence_num, max_word_num
+        return image, image_name, list(label / np.sum(label)), target, sentence_num, max_word_num, text.replace(".", "")
 
     def __len__(self):
         return len(self.file_names)
 
 
 def collate_fn(data):
-    images, image_id, label, captions, sentence_num, max_word_num = zip(*data)
+    images, image_id, label, captions, sentence_num, max_word_num, text = zip(*data)
     images = torch.stack(images, 0)
 
     max_sentence_num = max(sentence_num)
@@ -82,13 +82,13 @@ def collate_fn(data):
 
     targets = np.zeros((len(captions), max_sentence_num + 1, max_word_num))
     prob = np.zeros((len(captions), max_sentence_num + 1))
-    print("captions", captions)
+
     for i, caption in enumerate(captions):
         for j, sentence in enumerate(caption):
             targets[i, j, :len(sentence)] = sentence[:]
             prob[i][j] = len(sentence) > 0
 
-    return images, image_id, torch.Tensor(label), targets, prob
+    return images, image_id, torch.Tensor(label), targets, prob, text
 
 
 def get_loader(image_dir,

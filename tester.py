@@ -53,7 +53,7 @@ class CaptionSampler(object):
         # self.sentence_model.eval()
         # self.word_model.eval()
 
-        for i, (images, _, label, captions, prob) in enumerate(self.data_loader):
+        for i, (images, _, label, captions, prob, text) in enumerate(self.data_loader):
             batch_tag_loss, batch_stop_loss, batch_word_loss, batch_loss = 0, 0, 0, 0
             images = self.__to_var(images, requires_grad=False)
 
@@ -108,7 +108,7 @@ class CaptionSampler(object):
         bleu_score_tot = 0
         bleu_score_final = 0
 
-        for images, image_id, label, captions, _ in progress_bar:
+        for images, image_id, label, captions, _, text in progress_bar:
             images = self.__to_var(images, requires_grad=False)
             # print("images", images.shape)
 
