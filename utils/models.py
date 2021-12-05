@@ -462,7 +462,7 @@ class BertClassfier(nn.Module):
             print(v.dtype)
             print(sentence_embeddings.dtype)
             # sentence_embeddings = v.half()
-            x = self.bert_l1(sentence_embeddings)
+            x = self.bert_l1(v)
             x = F.relu(x)
             out_emb = self.bert_l2(x)
 
