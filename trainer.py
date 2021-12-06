@@ -442,8 +442,8 @@ class LSTMDebugger(DebuggerBase):
             print("semantic_features.shape", semantic_features.shape)
             print("text_features.shape", text_features.shape)
 
-            loss = self.nt_xent_criterion(avg_features, text_features)
-            print("contrastive loss :", loss)
+            contrastive_loss = self.nt_xent_criterion(avg_features, text_features)
+            print("contrastive loss :", contrastive_loss)
 
             batch_tag_loss = self.mse_criterion(tags, self._to_var(label, requires_grad=False)).sum()
 
@@ -479,11 +479,17 @@ class LSTMDebugger(DebuggerBase):
                          + self.args.lambda_stop * batch_stop_loss \
                          + self.args.lambda_word * batch_word_loss
 
+            print("batch_tag loss :", batch_tag_loss, self.args.lambda_tag * batch_tag_loss)
+            print("batch_stop loss :", batch_stop_loss, self.args.lambda_stop * batch_stop_loss)
+            print("batch_word loss :", batch_word_loss, self.args.lambda_word * batch_word_loss)
+            print("batch loss :", batch_loss)
             self.optimizer.zero_grad()
             batch_loss.backward()
+
             if self.args.clip > 0:
                 torch.nn.utils.clip_grad_norm(self.sentence_model.parameters(), self.args.clip)
                 torch.nn.utils.clip_grad_norm(self.word_model.parameters(), self.args.clip)
+
             self.optimizer.step()
 
             tag_loss += self.args.lambda_tag * batch_tag_loss.data
