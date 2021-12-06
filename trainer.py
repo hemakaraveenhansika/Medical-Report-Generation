@@ -443,24 +443,14 @@ class LSTMDebugger(DebuggerBase):
             print("text_features.shape", text_features.shape)
 
             contrastive_loss = self.nt_xent_criterion(avg_features, text_features)
-            print("contrastive loss :", contrastive_loss)
-
             batch_tag_loss = self.mse_criterion(tags, self._to_var(label, requires_grad=False)).sum()
 
             sentence_states = None
             prev_hidden_states = self._to_var(torch.zeros(images.shape[0], 1, self.args.hidden_size))
 
-
-
             for sentence_index in range(captions.shape[1]):
-                ctx, _, _ = self.co_attention.forward(avg_features,
-                                                      semantic_features,
-                                                      prev_hidden_states)
-
-                topic, p_stop, hidden_states, sentence_states = self.sentence_model.forward(ctx,
-                                                                                            prev_hidden_states,
-                                                                                            sentence_states)
-
+                ctx, _, _ = self.co_attention.forward(avg_features, semantic_features, prev_hidden_states)
+                topic, p_stop, hidden_states, sentence_states = self.sentence_model.forward(ctx, prev_hidden_states, sentence_states)
                 batch_stop_loss += self.ce_criterion(p_stop.squeeze(), prob_real[:, sentence_index]).sum()
 
                 # print("p_stop:{}".format(p_stop.squeeze()))
@@ -469,16 +459,18 @@ class LSTMDebugger(DebuggerBase):
                 for word_index in range(1, captions.shape[2]):
                     words = self.word_model.forward(topic, context[:, sentence_index, :word_index])
                     word_mask = (context[:, sentence_index, word_index] > 0).float()
-                    batch_word_loss += (self.ce_criterion(words, context[:, sentence_index, word_index])
-                                        * word_mask).sum() * (0.9 ** word_index)
+                    batch_word_loss += (self.ce_criterion(words, context[:, sentence_index, word_index]) * word_mask).sum() * (0.9 ** word_index)
+
                     # batch_word_loss += (self.ce_criterion(words, context[:, sentence_index, word_index])).sum()
                     # print("words:{}".format(torch.max(words, 1)[1]))
                     # print("real:{}".format(context[:, sentence_index, word_index]))
 
             batch_loss = self.args.lambda_tag * batch_tag_loss \
                          + self.args.lambda_stop * batch_stop_loss \
-                         + self.args.lambda_word * batch_word_loss
+                         + self.args.lambda_word * batch_word_loss  \
+                            + self.args.lambda_contrast * contrastive_loss
 
+            print("contrastive loss :", contrastive_loss, self.args.lambda_contrast * contrastive_loss)
             print("batch_tag loss :", batch_tag_loss, self.args.lambda_tag * batch_tag_loss)
             print("batch_stop loss :", batch_stop_loss, self.args.lambda_stop * batch_stop_loss)
             print("batch_word loss :", batch_word_loss, self.args.lambda_word * batch_word_loss)
@@ -700,6 +692,7 @@ if __name__ == '__main__':
 
     # Loss Function
     parser.add_argument('--lambda_tag', type=float, default=10000)
+    parser.add_argument('--lambda_contrast', type=float, default=100)
     parser.add_argument('--lambda_stop', type=float, default=10)
     parser.add_argument('--lambda_word', type=float, default=1)
 
