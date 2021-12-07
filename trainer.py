@@ -314,7 +314,7 @@ class DebuggerBase:
             self.logger.scalar_summary(tag, value, epoch + 1)
 
     def _init_logger(self):
-        logger = Logger(os.path.join(self.result_path, 'logs'))
+        logger = Logger(os.path.join(self.args.result_path, 'logs'))
         return logger
 
     def _init_nt_xent(self):
