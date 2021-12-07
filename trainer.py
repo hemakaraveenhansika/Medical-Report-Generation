@@ -464,8 +464,7 @@ class LSTMDebugger(DebuggerBase):
             # print("batch_tag loss :", batch_tag_loss, self.args.lambda_tag * batch_tag_loss)
             # print("batch_stop loss :", batch_stop_loss, self.args.lambda_stop * batch_stop_loss)
             # print("batch_word loss :", batch_word_loss, self.args.lambda_word * batch_word_loss)
-            print("\nbatch loss :", batch_loss.item(), batch_loss.data)
-            print("batch loss :", type(batch_loss.item()), type(batch_loss.data))
+            print("\nbatch loss :", batch_loss.item())
 
             self.optimizer.zero_grad()
             batch_loss.backward()
@@ -476,11 +475,11 @@ class LSTMDebugger(DebuggerBase):
 
             self.optimizer.step()
 
-            tag_loss += self.args.lambda_tag * batch_tag_loss.data
-            stop_loss += self.args.lambda_stop * batch_stop_loss.data
-            word_loss += self.args.lambda_word * batch_word_loss.data
-            contrastive_loss += self.args.lambda_contrast * batch_contrastive_loss.data
-            loss += batch_loss.data
+            tag_loss += self.args.lambda_tag * batch_tag_loss.item()
+            stop_loss += self.args.lambda_stop * batch_stop_loss.item()
+            word_loss += self.args.lambda_word * batch_word_loss.item()
+            contrastive_loss += self.args.lambda_contrast * batch_contrastive_loss.item()
+            loss += batch_loss.item()
 
         return tag_loss, stop_loss, word_loss, contrastive_loss, loss
 
@@ -541,11 +540,11 @@ class LSTMDebugger(DebuggerBase):
                          + self.args.lambda_word * batch_word_loss \
                          + self.args.lambda_contrast * batch_contrastive_loss
 
-            tag_loss += self.args.lambda_tag * batch_tag_loss.data
-            stop_loss += self.args.lambda_stop * batch_stop_loss.data
-            word_loss += self.args.lambda_word * batch_word_loss.data
-            contrastive_loss += self.args.lambda_contrast * batch_contrastive_loss.data
-            loss += batch_loss.data
+            tag_loss += self.args.lambda_tag * batch_tag_loss.item()
+            stop_loss += self.args.lambda_stop * batch_stop_loss.item()
+            word_loss += self.args.lambda_word * batch_word_loss.item()
+            contrastive_loss += self.args.lambda_contrast * batch_contrastive_loss.item()
+            loss += batch_loss.item()
 
         return tag_loss, stop_loss, word_loss, contrastive_loss, loss
 
