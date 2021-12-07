@@ -514,7 +514,7 @@ class LSTMDebugger(DebuggerBase):
             # print("batch_tag loss :", batch_tag_loss, self.args.lambda_tag * batch_tag_loss)
             # print("batch_stop loss :", batch_stop_loss, self.args.lambda_stop * batch_stop_loss)
             # print("batch_word loss :", batch_word_loss, self.args.lambda_word * batch_word_loss)
-            print("\nbatch loss :", batch_loss.item())
+            # print("\nbatch loss :", batch_loss.item())
 
             self.optimizer.zero_grad()
             batch_loss.backward()
