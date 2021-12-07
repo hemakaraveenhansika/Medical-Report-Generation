@@ -15,6 +15,7 @@ from utils.dataset import *
 from utils.loss import *
 from utils.logger import Logger
 
+import matplotlib.pyplot as plt
 
 class DebuggerBase:
     def __init__(self, args):
@@ -69,9 +70,10 @@ class DebuggerBase:
 
     def train(self):
         print("train start")
+        results = {}
         for epoch_id in range(self.start_epoch, self.args.epochs):
             print('\n', f'Epoch {epoch_id}')
-            results = {}
+
             train_tag_loss, train_stop_loss, train_word_loss, train_contrastive_loss, train_loss = self._epoch_train()
             val_tag_loss, val_stop_loss, val_word_loss, val_contrastive_loss, val_loss = self._epoch_val()
 
@@ -84,10 +86,12 @@ class DebuggerBase:
 
             results[epoch_id] = {
                 'epoch_id': epoch_id,
+                'train_contrastive_loss': train_contrastive_loss,
                 'train_tags_loss': train_tag_loss,
                 'train_stop_loss': train_stop_loss,
                 'train_word_loss': train_word_loss,
                 'train_loss': train_loss,
+                'val_contrastive_loss':val_contrastive_loss,
                 'val_tags_loss': val_tag_loss,
                 'val_stop_loss': val_stop_loss,
                 'val_word_loss': val_word_loss,
@@ -107,6 +111,7 @@ class DebuggerBase:
             #           epoch=epoch_id)
 
             print("train_loss, val_loss ", epoch_id, train_loss, val_loss)
+        self.__plot_graph(results)
         self.__save_json(results)
         print("train done")
 
@@ -118,6 +123,23 @@ class DebuggerBase:
         with open(os.path.join(result_path, '{}.json'.format(self.args.result_name)), 'w') as f:
             json.dump(result, f)
         print("logs saved in", result_path)
+
+    def __plot_graph(self, result):
+        keys = ['contrastive_loss', 'loss']
+        modes = ['train', 'val']
+        for key in keys:
+            for mode in modes:
+                x = []
+                y = []
+                for i in range(len(result)):
+                    x.append(i)
+                    y.append(result[str(i)][mode+'_'+key])
+                plt.plot(x, y, label=mode)
+                plt.xlabel('epoch')
+                plt.ylabel(key)
+                plt.title(key)
+            plt.legend()
+            plt.show()
 
     def _epoch_train(self):
         raise NotImplementedError
@@ -711,7 +733,7 @@ if __name__ == '__main__':
     """
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--learning_rate', type=int, default=0.001)
-    parser.add_argument('--epochs', type=int, default=2)
+    parser.add_argument('--epochs', type=int, default=4)
 
     parser.add_argument('--clip', type=float, default=-1,
                         help='gradient clip, -1 means no clip (default: 0.35)')
