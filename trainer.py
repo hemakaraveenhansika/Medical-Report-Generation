@@ -522,8 +522,8 @@ class LSTMDebugger(DebuggerBase):
                 topic, p_stop, hidden_states, sentence_states = self.sentence_model.forward(ctx,
                                                                                             prev_hidden_states,
                                                                                             sentence_states)
-                print("p_stop:{}".format(p_stop.squeeze()))
-                print("prob_real:{}".format(prob_real[:, sentence_index]))
+                # print("p_stop:{}".format(p_stop.squeeze()))
+                # print("prob_real:{}".format(prob_real[:, sentence_index]))
 
                 batch_stop_loss += self.ce_criterion(p_stop.squeeze(), prob_real[:, sentence_index]).sum()
 
@@ -532,8 +532,8 @@ class LSTMDebugger(DebuggerBase):
                     word_mask = (context[:, sentence_index, word_index] > 0).float()
                     batch_word_loss += (self.ce_criterion(words, context[:, sentence_index, word_index])
                                         * word_mask).sum()
-                    print("words:{}".format(torch.max(words, 1)[1]))
-                    print("real:{}".format(context[:, sentence_index, word_index]))
+                    # print("words:{}".format(torch.max(words, 1)[1]))
+                    # print("real:{}".format(context[:, sentence_index, word_index]))
 
             batch_loss = self.args.lambda_tag * batch_tag_loss \
                          + self.args.lambda_stop * batch_stop_loss \
