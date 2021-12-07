@@ -110,7 +110,8 @@ class DebuggerBase:
             #           lr=self.optimizer.param_groups[0]['lr'],
             #           epoch=epoch_id)
 
-            print("train_loss, val_loss ", epoch_id, train_loss, val_loss)
+            # print("train_loss, val_loss ", epoch_id, train_loss, val_loss)
+        print(results)
         self.__save_json(results)
         self.__plot_graph(results)
         print("train done")
@@ -131,8 +132,8 @@ class DebuggerBase:
             for mode in modes:
                 x = []
                 y = []
-                print(len(result))
                 for i in range(len(result)):
+                    print(str(i), mode+'_'+key)
                     x.append(i)
                     y.append(result[str(i)][mode+'_'+key])
                 plt.plot(x, y, label=mode)
@@ -734,7 +735,7 @@ if __name__ == '__main__':
     """
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--learning_rate', type=int, default=0.001)
-    parser.add_argument('--epochs', type=int, default=4)
+    parser.add_argument('--epochs', type=int, default=2)
 
     parser.add_argument('--clip', type=float, default=-1,
                         help='gradient clip, -1 means no clip (default: 0.35)')
