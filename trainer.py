@@ -314,7 +314,7 @@ class DebuggerBase:
             self.logger.scalar_summary(tag, value, epoch + 1)
 
     def _init_logger(self):
-        logger = Logger(os.path.join(self.model_dir, 'logs'))
+        logger = Logger(os.path.join(self.result_path, 'logs'))
         return logger
 
     def _init_nt_xent(self):
@@ -633,7 +633,7 @@ if __name__ == '__main__':
     parser.add_argument('--crop_size', type=int, default=224,
                         help='size for randomly cropping images')
     # Load/Save model argument
-    parser.add_argument('--model_path', type=str, default='./report_v4_models/',
+    parser.add_argument('--model_path', type=str, default='./models/',
                         help='path for saving trained models')
     parser.add_argument('--load_model_path', type=str, default='',
                         help='The path of loaded model')
@@ -697,6 +697,10 @@ if __name__ == '__main__':
     parser.add_argument('--lambda_contrast', type=float, default=100)
     parser.add_argument('--lambda_stop', type=float, default=10)
     parser.add_argument('--lambda_word', type=float, default=1)
+
+    # Saved result
+    parser.add_argument('--result_path', type=str, default='results',
+                        help='the path for storing results')
 
     args = parser.parse_args()
     args.cuda = torch.cuda.is_available()

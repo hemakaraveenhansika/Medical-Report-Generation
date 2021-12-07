@@ -457,7 +457,7 @@ if __name__ == '__main__':
     Data Argument
     """
     # Path Argument
-    parser.add_argument('--model_dir', type=str, default='/kaggle/working/Medical-Report-Generation/report_v4_models/v4')
+    parser.add_argument('--model_dir', type=str, default='/kaggle/working/Medical-Report-Generation/models/v4')
     parser.add_argument('--image_dir', type=str, default='/kaggle/input/chest-xrays-indiana-university/images/images_normalized',
                         help='the path for images')
     parser.add_argument('--caption_json', type=str, default='./data/new_data/captions.json',
