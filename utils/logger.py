@@ -22,7 +22,8 @@ class Logger(object):
         # self.writer.add_summary(summary, step)
         # self.writer.scalar(tag, value, step)
         with self.writer.as_default():
-            tf.summary.scalar(tag, value.cpu(), step)
+            print(value.item())
+            tf.summary.scalar(tag, value.item(), step)
 
     def image_summary(self, tag, images, step):
         """Log a list of images."""
