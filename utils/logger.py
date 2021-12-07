@@ -23,6 +23,7 @@ class Logger(object):
         # self.writer.scalar(tag, value, step)
         with self.writer.as_default():
             print(type(value))
+
             tf.summary.scalar(tag, value.device('cpu'), step)
 
     def image_summary(self, tag, images, step):
