@@ -111,8 +111,8 @@ class DebuggerBase:
             #           epoch=epoch_id)
 
             print("train_loss, val_loss ", epoch_id, train_loss, val_loss)
-        self.__plot_graph(results)
         self.__save_json(results)
+        self.__plot_graph(results)
         print("train done")
 
     def __save_json(self, result):
@@ -131,9 +131,10 @@ class DebuggerBase:
             for mode in modes:
                 x = []
                 y = []
+                print(len(result))
                 for i in range(len(result)):
                     x.append(i)
-                    y.append(result[str(i+1)][mode+'_'+key])
+                    y.append(result[str(i)][mode+'_'+key])
                 plt.plot(x, y, label=mode)
                 plt.xlabel('epoch')
                 plt.ylabel(key)
