@@ -133,7 +133,7 @@ class DebuggerBase:
                 y = []
                 for i in range(len(result)):
                     x.append(i)
-                    y.append(result[str(i)][mode+'_'+key])
+                    y.append(result[str(i+1)][mode+'_'+key])
                 plt.plot(x, y, label=mode)
                 plt.xlabel('epoch')
                 plt.ylabel(key)
