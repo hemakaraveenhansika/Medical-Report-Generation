@@ -71,6 +71,7 @@ class DebuggerBase:
         print("train start")
         for epoch_id in range(self.start_epoch, self.args.epochs):
             print('\n', f'Epoch {epoch_id}')
+            results = {}
             train_tag_loss, train_stop_loss, train_word_loss, train_contrastive_loss, train_loss = self._epoch_train()
             val_tag_loss, val_stop_loss, val_word_loss, val_contrastive_loss, val_loss = self._epoch_val()
 
@@ -80,18 +81,43 @@ class DebuggerBase:
                 self.scheduler.step(val_loss)
             self.writer.write( "[{} - Epoch {}] train loss:{} - val_loss:{} - lr:{}\n".format(self._get_now(), epoch_id, train_loss, val_loss, self.optimizer.param_groups[0]['lr']))
             self._save_model(epoch_id, val_loss, val_tag_loss, val_stop_loss, val_word_loss, train_loss)
-            self._log(train_tags_loss=train_tag_loss,
-                      train_stop_loss=train_stop_loss,
-                      train_word_loss=train_word_loss,
-                      train_loss=train_loss,
-                      val_tags_loss=val_tag_loss,
-                      val_stop_loss=val_stop_loss,
-                      val_word_loss=val_word_loss,
-                      val_loss=val_loss,
-                      lr=self.optimizer.param_groups[0]['lr'],
-                      epoch=epoch_id)
+
+            results[epoch_id] = {
+                'epoch_id': epoch_id,
+                'train_tags_loss': train_tag_loss,
+                'train_stop_loss': train_stop_loss,
+                'train_word_loss': train_word_loss,
+                'train_loss': train_loss,
+                'val_tags_loss': val_tag_loss,
+                'val_stop_loss': val_stop_loss,
+                'val_word_loss': val_word_loss,
+                'val_loss': val_loss,
+                'lr': self.optimizer.param_groups[0]['lr']
+            }
+
+            # self._log(train_tags_loss=train_tag_loss,
+            #           train_stop_loss=train_stop_loss,
+            #           train_word_loss=train_word_loss,
+            #           train_loss=train_loss,
+            #           val_tags_loss=val_tag_loss,
+            #           val_stop_loss=val_stop_loss,
+            #           val_word_loss=val_word_loss,
+            #           val_loss=val_loss,
+            #           lr=self.optimizer.param_groups[0]['lr'],
+            #           epoch=epoch_id)
+
             print("train_loss, val_loss ", epoch_id, train_loss, val_loss)
+        self.__save_json(results)
         print("train done")
+
+    def __save_json(self, result):
+        # result_path = os.path.join(self.args.model_dir, self.args.result_path)
+        result_path = "/kaggle/working/Medical-Report-Generation/results"
+        if not os.path.exists(result_path):
+            os.makedirs(result_path)
+        with open(os.path.join(result_path, '{}.json'.format(self.args.result_name)), 'w') as f:
+            json.dump(result, f)
+        print("logs saved in", result_path)
 
     def _epoch_train(self):
         raise NotImplementedError
@@ -701,6 +727,8 @@ if __name__ == '__main__':
     # Saved result
     parser.add_argument('--result_path', type=str, default='results',
                         help='the path for storing results')
+    parser.add_argument('--result_name', type=str, default='logs',
+                        help='the name of results')
 
     args = parser.parse_args()
     args.cuda = torch.cuda.is_available()
