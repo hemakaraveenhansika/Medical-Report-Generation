@@ -71,25 +71,15 @@ class DebuggerBase:
         print("train start")
         for epoch_id in range(self.start_epoch, self.args.epochs):
             print('\n', f'Epoch {epoch_id}')
-            train_tag_loss, train_stop_loss, train_word_loss, train_loss = self._epoch_train()
-            val_tag_loss, val_stop_loss, val_word_loss, val_loss = self._epoch_val()
+            train_tag_loss, train_stop_loss, train_word_loss, train_contrastive_loss, train_loss = self._epoch_train()
+            val_tag_loss, val_stop_loss, val_word_loss, val_contrastive_loss, val_loss = self._epoch_val()
 
             if self.args.mode == 'train':
                 self.scheduler.step(train_loss)
             else:
                 self.scheduler.step(val_loss)
-            self.writer.write(
-                "[{} - Epoch {}] train loss:{} - val_loss:{} - lr:{}\n".format(self._get_now(),
-                                                                               epoch_id,
-                                                                               train_loss,
-                                                                               val_loss,
-                                                                               self.optimizer.param_groups[0]['lr']))
-            self._save_model(epoch_id,
-                             val_loss,
-                             val_tag_loss,
-                             val_stop_loss,
-                             val_word_loss,
-                             train_loss)
+            self.writer.write( "[{} - Epoch {}] train loss:{} - val_loss:{} - lr:{}\n".format(self._get_now(), epoch_id, train_loss, val_loss, self.optimizer.param_groups[0]['lr']))
+            self._save_model(epoch_id, val_loss, val_tag_loss, val_stop_loss, val_word_loss, train_loss)
             self._log(train_tags_loss=train_tag_loss,
                       train_stop_loss=train_stop_loss,
                       train_word_loss=train_word_loss,
@@ -321,7 +311,7 @@ class DebuggerBase:
 
         for tag, value in info.items():
             print(tag, value, epoch + 1)
-            # self.logger.scalar_summary(tag, value, epoch + 1)
+            self.logger.scalar_summary(tag, value, epoch + 1)
 
     def _init_logger(self):
         logger = Logger(os.path.join(self.model_dir, 'logs'))
@@ -414,7 +404,7 @@ class LSTMDebugger(DebuggerBase):
         self.args = args
 
     def _epoch_train(self):
-        tag_loss, stop_loss, word_loss, loss = 0, 0, 0, 0
+        tag_loss, stop_loss, word_loss, contrastive_loss, loss = 0, 0, 0, 0, 0
         self.extractor.train()
         self.bert_encoder.train()
         self.mlc.train()
@@ -425,7 +415,7 @@ class LSTMDebugger(DebuggerBase):
         # for i, (images, _, label, captions, prob) in enumerate(self.train_data_loader):
         for images, image_id, label, captions, prob, text in tqdm(self.train_data_loader):
 
-            batch_tag_loss, batch_stop_loss, batch_word_loss, batch_loss = 0, 0, 0, 0
+            batch_tag_loss, batch_stop_loss, batch_word_loss, batch_contrastive_loss, batch_loss = 0, 0, 0, 0, 0
             images = self._to_var(images)
             bert_tokens = self.bert_tokenizer(list(text), return_tensors="pt", padding=True, truncation=True)
             bert_tokens = bert_tokens.to('cuda' if torch.cuda.is_available() else 'cpu')
@@ -442,7 +432,7 @@ class LSTMDebugger(DebuggerBase):
             # print("semantic_features.shape", semantic_features.shape)
             # print("text_features.shape", text_features.shape)
 
-            contrastive_loss = self.nt_xent_criterion(avg_features, text_features)
+            batch_contrastive_loss = self.nt_xent_criterion(avg_features, text_features)
             batch_tag_loss = self.mse_criterion(tags, self._to_var(label, requires_grad=False)).sum()
 
             sentence_states = None
@@ -468,13 +458,14 @@ class LSTMDebugger(DebuggerBase):
             batch_loss = self.args.lambda_tag * batch_tag_loss \
                          + self.args.lambda_stop * batch_stop_loss \
                          + self.args.lambda_word * batch_word_loss  \
-                            + self.args.lambda_contrast * contrastive_loss
+                            + self.args.lambda_contrast * batch_contrastive_loss
 
-            # print("contrastive loss :", contrastive_loss, self.args.lambda_contrast * contrastive_loss)
+            # print("batch_contrastive loss :", batch_contrastive_loss, self.args.lambda_contrast * batch_contrastive_loss)
             # print("batch_tag loss :", batch_tag_loss, self.args.lambda_tag * batch_tag_loss)
             # print("batch_stop loss :", batch_stop_loss, self.args.lambda_stop * batch_stop_loss)
             # print("batch_word loss :", batch_word_loss, self.args.lambda_word * batch_word_loss)
             print("batch loss :", batch_loss.item())
+            
             self.optimizer.zero_grad()
             batch_loss.backward()
 
@@ -487,64 +478,75 @@ class LSTMDebugger(DebuggerBase):
             tag_loss += self.args.lambda_tag * batch_tag_loss.data
             stop_loss += self.args.lambda_stop * batch_stop_loss.data
             word_loss += self.args.lambda_word * batch_word_loss.data
+            contrastive_loss += self.args.lambda_contrast * batch_contrastive_loss.data
             loss += batch_loss.data
 
-        return tag_loss, stop_loss, word_loss, loss
+        return tag_loss, stop_loss, word_loss, contrastive_loss, loss
 
     def _epoch_val(self):
-        tag_loss, stop_loss, word_loss, loss = 0, 0, 0, 0
-        # self.extractor.eval()
-        # self.mlc.eval()
-        # self.co_attention.eval()
-        # self.sentence_model.eval()
-        # self.word_model.eval()
-        #
-        # for i, (images, _, label, captions, prob) in enumerate(self.val_data_loader):
-        #     batch_tag_loss, batch_stop_loss, batch_word_loss, batch_loss = 0, 0, 0, 0
-        #     images = self._to_var(images, requires_grad=False)
-        #
-        #     visual_features, avg_features = self.extractor.forward(images)
-        #     tags, semantic_features = self.mlc.forward(avg_features)
-        #
-        #     batch_tag_loss = self.mse_criterion(tags, self._to_var(label, requires_grad=False)).sum()
-        #
-        #     sentence_states = None
-        #     prev_hidden_states = self._to_var(torch.zeros(images.shape[0], 1, self.args.hidden_size))
-        #
-        #     context = self._to_var(torch.Tensor(captions).long(), requires_grad=False)
-        #     prob_real = self._to_var(torch.Tensor(prob).long(), requires_grad=False)
-        #
-        #     for sentence_index in range(captions.shape[1]):
-        #         ctx, v_att, a_att = self.co_attention.forward(avg_features,
-        #                                                       semantic_features,
-        #                                                       prev_hidden_states)
-        #
-        #         topic, p_stop, hidden_states, sentence_states = self.sentence_model.forward(ctx,
-        #                                                                                     prev_hidden_states,
-        #                                                                                     sentence_states)
-        #         print("p_stop:{}".format(p_stop.squeeze()))
-        #         print("prob_real:{}".format(prob_real[:, sentence_index]))
-        #
-        #         batch_stop_loss += self.ce_criterion(p_stop.squeeze(), prob_real[:, sentence_index]).sum()
-        #
-        #         for word_index in range(1, captions.shape[2]):
-        #             words = self.word_model.forward(topic, context[:, sentence_index, :word_index])
-        #             word_mask = (context[:, sentence_index, word_index] > 0).float()
-        #             batch_word_loss += (self.ce_criterion(words, context[:, sentence_index, word_index])
-        #                                 * word_mask).sum()
-        #             print("words:{}".format(torch.max(words, 1)[1]))
-        #             print("real:{}".format(context[:, sentence_index, word_index]))
-        #
-        #     batch_loss = self.args.lambda_tag * batch_tag_loss \
-        #                  + self.args.lambda_stop * batch_stop_loss \
-        #                  + self.args.lambda_word * batch_word_loss
-        #
-        #     tag_loss += self.args.lambda_tag * batch_tag_loss.data
-        #     stop_loss += self.args.lambda_stop * batch_stop_loss.data
-        #     word_loss += self.args.lambda_word * batch_word_loss.data
-        #     loss += batch_loss.data
+        tag_loss, stop_loss, word_loss, contrastive_loss, loss = 0, 0, 0, 0, 0
+        self.extractor.eval()
+        self.bert_encoder.eval()
+        self.mlc.eval()
+        self.co_attention.eval()
+        self.sentence_model.eval()
+        self.word_model.eval()
 
-        return tag_loss, stop_loss, word_loss, loss
+        # for i, (images, _, label, captions, prob) in enumerate(self.val_data_loader):
+        for images, image_id, label, captions, prob, text in tqdm(self.val_data_loader):
+            
+            batch_tag_loss, batch_stop_loss, batch_word_loss, batch_contrastive_loss, batch_loss = 0, 0, 0, 0, 0
+            images = self._to_var(images, requires_grad=False)
+            
+            bert_tokens = self.bert_tokenizer(list(text), return_tensors="pt", padding=True, truncation=True)
+            bert_tokens = bert_tokens.to('cuda' if torch.cuda.is_available() else 'cpu')
+            # bert_tokens = self._to_var(bert_tokens, requires_grad=False)
+            context = self._to_var(torch.Tensor(captions).long(), requires_grad=False)
+            prob_real = self._to_var(torch.Tensor(prob).long(), requires_grad=False)
+            
+            visual_features, avg_features = self.extractor.forward(images)
+            text_features = self.bert_encoder.forward(bert_tokens)
+            tags, semantic_features = self.mlc.forward(avg_features)
+            
+            batch_contrastive_loss = self.nt_xent_criterion(avg_features, text_features)
+            batch_tag_loss = self.mse_criterion(tags, self._to_var(label, requires_grad=False)).sum()
+
+            sentence_states = None
+            prev_hidden_states = self._to_var(torch.zeros(images.shape[0], 1, self.args.hidden_size))
+
+            for sentence_index in range(captions.shape[1]):
+                ctx, v_att, a_att = self.co_attention.forward(avg_features,
+                                                              semantic_features,
+                                                              prev_hidden_states)
+
+                topic, p_stop, hidden_states, sentence_states = self.sentence_model.forward(ctx,
+                                                                                            prev_hidden_states,
+                                                                                            sentence_states)
+                print("p_stop:{}".format(p_stop.squeeze()))
+                print("prob_real:{}".format(prob_real[:, sentence_index]))
+
+                batch_stop_loss += self.ce_criterion(p_stop.squeeze(), prob_real[:, sentence_index]).sum()
+
+                for word_index in range(1, captions.shape[2]):
+                    words = self.word_model.forward(topic, context[:, sentence_index, :word_index])
+                    word_mask = (context[:, sentence_index, word_index] > 0).float()
+                    batch_word_loss += (self.ce_criterion(words, context[:, sentence_index, word_index])
+                                        * word_mask).sum()
+                    print("words:{}".format(torch.max(words, 1)[1]))
+                    print("real:{}".format(context[:, sentence_index, word_index]))
+
+            batch_loss = self.args.lambda_tag * batch_tag_loss \
+                         + self.args.lambda_stop * batch_stop_loss \
+                         + self.args.lambda_word * batch_word_loss \
+                         + self.args.lambda_contrast * batch_contrastive_loss
+
+            tag_loss += self.args.lambda_tag * batch_tag_loss.data
+            stop_loss += self.args.lambda_stop * batch_stop_loss.data
+            word_loss += self.args.lambda_word * batch_word_loss.data
+            contrastive_loss += self.args.lambda_contrast * batch_contrastive_loss.data
+            loss += batch_loss.data
+
+        return tag_loss, stop_loss, word_loss, contrastive_loss, loss
 
     def _init_sentence_model(self):
         model = SentenceLSTM(version=self.args.sent_version,
