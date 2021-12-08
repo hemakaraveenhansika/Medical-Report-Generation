@@ -118,7 +118,9 @@ class DebuggerBase:
 
     def __save_json(self, result):
         # result_path = os.path.join(self.args.model_dir, self.args.result_path)
-        result_path = "/kaggle/working/Medical-Report-Generation/results"
+        # result_path = "/kaggle/working/Medical-Report-Generation/results"
+        result_path = self.args.result_path
+
         if not os.path.exists(result_path):
             os.makedirs(result_path)
         with open(os.path.join(result_path, '{}.json'.format(self.args.result_name)), 'w') as f:
@@ -669,8 +671,9 @@ if __name__ == '__main__':
     # Path Argument
     parser.add_argument('--vocab_path', type=str, default='./data/new_data/vocab.pkl',
                         help='the path for vocabulary object')
-    parser.add_argument('--image_dir', type=str, default='/kaggle/input/chest-xrays-indiana-university/images/images_normalized',
-                        help='the path for images')
+    # parser.add_argument('--image_dir', type=str, default='/kaggle/input/chest-xrays-indiana-university/images/images_normalized', help='the path for images')
+    parser.add_argument('--image_dir', type=str, default='/content/drive/MyDrive/FYP17-captioning/Datasets/iu/images/images_normalized', help='the path for images')
+
     parser.add_argument('--caption_json', type=str, default='./data/new_data/captions.json',
                         help='path for captions')
     parser.add_argument('--train_file_list', type=str, default='./data/new_data/train_data.txt',

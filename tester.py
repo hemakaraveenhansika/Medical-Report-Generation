@@ -304,7 +304,8 @@ class CaptionSampler(object):
 
     def __save_json(self, result):
         # result_path = os.path.join(self.args.model_dir, self.args.result_path)
-        result_path = "/kaggle/working/Medical-Report-Generation/results"
+        # result_path = "/kaggle/working/Medical-Report-Generation/results"
+        result_path = self.args.result_path
         if not os.path.exists(result_path):
             os.makedirs(result_path)
         with open(os.path.join(result_path, '{}.json'.format(self.args.result_name)), 'w') as f:
@@ -457,8 +458,11 @@ if __name__ == '__main__':
     Data Argument
     """
     # Path Argument
-    parser.add_argument('--model_dir', type=str, default='/kaggle/working/Medical-Report-Generation/models/v4')
-    parser.add_argument('--image_dir', type=str, default='/kaggle/input/chest-xrays-indiana-university/images/images_normalized',
+    # /kaggle/working/Medical-Report-Generation/models/v4
+    # '/content/drive/MyDrive/FYP-Individual/Medical_Report_Generation/Medical-Report-Generation'
+    parser.add_argument('--model_dir', type=str, default='/content/drive/MyDrive/FYP-Individual/Medical_Report_Generation/Medical-Report-Generation/models/v4')
+    # /kaggle/input/chest-xrays-indiana-university/images/images_normalized
+    parser.add_argument('--image_dir', type=str, default='/content/drive/MyDrive/FYP17-captioning/Datasets/iu/images/images_normalized',
                         help='the path for images')
     parser.add_argument('--caption_json', type=str, default='./data/new_data/captions.json',
                         help='path for captions')
