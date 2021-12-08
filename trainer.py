@@ -669,10 +669,9 @@ if __name__ == '__main__':
     parser.add_argument('--mode', type=str, default='train')
 
     # Path Argument
-    parser.add_argument('--vocab_path', type=str, default='./data/new_data/vocab.pkl',
-                        help='the path for vocabulary object')
-    # parser.add_argument('--image_dir', type=str, default='/kaggle/input/chest-xrays-indiana-university/images/images_normalized', help='the path for images')
-    parser.add_argument('--image_dir', type=str, default='/content/drive/MyDrive/FYP17-captioning/Datasets/iu/images/images_normalized', help='the path for images')
+    parser.add_argument('--vocab_path', type=str, default='./data/new_data/vocab.pkl', help='the path for vocabulary object')
+    parser.add_argument('--image_dir', type=str, default='/kaggle/input/chest-xrays-indiana-university/images/images_normalized', help='the path for images')
+    # parser.add_argument('--image_dir', type=str, default='/content/drive/MyDrive/FYP17-captioning/Datasets/iu/images/images_normalized', help='the path for images')
 
     parser.add_argument('--caption_json', type=str, default='./data/new_data/captions.json',
                         help='path for captions')
@@ -762,3 +761,8 @@ if __name__ == '__main__':
 
     debugger = LSTMDebugger(args)
     debugger.train()
+
+    # bs
+    # bs + contrastive
+    # bs + cs + trasformer
+    # bs + cs + tf + ob
