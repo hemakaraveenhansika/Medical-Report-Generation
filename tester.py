@@ -460,7 +460,7 @@ if __name__ == '__main__':
     # Path Argument
     # /kaggle/working/Medical-Report-Generation/models/v4
     # '/content/drive/MyDrive/FYP-Individual/Medical_Report_Generation/Medical-Report-Generation'
-    parser.add_argument('--model_dir', type=str, default='/content/drive/MyDrive/FYP-Individual/Medical_Report_Generation/Medical-Report-Generation/models/v4')
+    parser.add_argument('--model_dir', type=str, default='./models/v4')
     # /kaggle/input/chest-xrays-indiana-university/images/images_normalized
     parser.add_argument('--image_dir', type=str, default='/content/drive/MyDrive/FYP17-captioning/Datasets/iu/images/images_normalized',
                         help='the path for images')
