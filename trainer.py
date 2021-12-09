@@ -134,7 +134,7 @@ class DebuggerBase:
             for mode in modes:
                 x = []
                 y = []
-                for i in range(len(result)):
+                for i in range(self.start_epoch, self.args.epochs):
                     print(str(i), mode+'_'+key)
                     x.append(i)
                     y.append(result[i][mode+'_'+key])
