@@ -199,7 +199,7 @@ class DebuggerBase:
         self.start_epoch = 0
         try:
             model_state = torch.load(self.args.load_model_path)
-            self.start_epoch = model_state['epoch']
+            self.start_epoch = model_state['epoch'] + 1
             self.writer.write("[Load Model-{} Succeed!]\n".format(self.args.load_model_path))
             self.writer.write("Load From Epoch {}\n".format(model_state['epoch']))
             print("Load From Epoch {}".format(model_state['epoch']))
