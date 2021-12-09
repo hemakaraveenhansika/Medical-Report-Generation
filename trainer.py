@@ -202,6 +202,7 @@ class DebuggerBase:
             self.start_epoch = model_state['epoch']
             self.writer.write("[Load Model-{} Succeed!]\n".format(self.args.load_model_path))
             self.writer.write("Load From Epoch {}\n".format(model_state['epoch']))
+            print("Load From Epoch {}".format(model_state['epoch']))
             return model_state
         except Exception as err:
             self.writer.write("[Load Model Failed] {}\n".format(err))
@@ -210,10 +211,11 @@ class DebuggerBase:
     def _init_visual_extractor(self):
         model = VisualFeatureExtractor(model_name=self.args.visual_model_name,
                                        pretrained=self.args.pretrained)
-
         try:
-            model_state = torch.load(self.args.load_visual_model_path)
-            model.load_state_dict(model_state['model'])
+            # model_state = torch.load(self.args.load_visual_model_path)
+            # model.load_state_dict(model_state['model'])
+            model.load_state_dict(self.model_state_dict['extractor'])
+            print("Visual Extractor Loaded!")
             self.writer.write("[Load Visual Extractor Succeed!]\n")
         except Exception as err:
             self.writer.write("[Load Model Failed] {}\n".format(err))
@@ -236,8 +238,10 @@ class DebuggerBase:
         model = BertClassfier(bert_base_model='bert-base-uncased', out_dim=1920, freeze_layers=[0,1,2,3,4,5])
 
         try:
-            model_state = torch.load(self.args.load_mlc_model_path)
-            model.load_state_dict(model_state['model'])
+            # model_state = torch.load(self.args.load_mlc_model_path)
+            # model.load_state_dict(model_state['model'])
+            model.load_state_dict(self.model_state_dict['bert'])
+            print("Bert_encoder Loaded!")
             self.writer.write("[Load BERT model Succeed!]\n")
         except Exception as err:
             self.writer.write("[Load BERT model Failed {}!]\n".format(err))
@@ -262,8 +266,10 @@ class DebuggerBase:
                     k=self.args.k)
 
         try:
-            model_state = torch.load(self.args.load_mlc_model_path)
-            model.load_state_dict(model_state['model'])
+            # model_state = torch.load(self.args.load_mlc_model_path)
+            # model.load_state_dict(model_state['model'])
+            model.load_state_dict(self.model_state_dict['mlc'])
+            print("Mlc Loaded!")
             self.writer.write("[Load MLC Succeed!]\n")
         except Exception as err:
             self.writer.write("[Load MLC Failed {}!]\n".format(err))
@@ -290,8 +296,10 @@ class DebuggerBase:
                             momentum=self.args.momentum)
 
         try:
-            model_state = torch.load(self.args.load_co_model_path)
-            model.load_state_dict(model_state['model'])
+            # model_state = torch.load(self.args.load_co_model_path)
+            # model.load_state_dict(model_state['model'])
+            model.load_state_dict(self.model_state_dict['co_attention'])
+            print("co_attention Loaded!")
             self.writer.write("[Load Co-attention Succeed!]\n")
         except Exception as err:
             self.writer.write("[Load Co-attention Failed {}!]\n".format(err))
@@ -414,6 +422,7 @@ class DebuggerBase:
             print("save whole model in", os.path.join(self.model_dir, "{}".format(_filename)))
             torch.save({'extractor': self.extractor.state_dict(),
                         'mlc': self.mlc.state_dict(),
+                        'bert': self.bert_encoder.state_dict(),
                         'co_attention': self.co_attention.state_dict(),
                         'sentence_model': self.sentence_model.state_dict(),
                         'word_model': self.word_model.state_dict(),
@@ -609,8 +618,10 @@ class LSTMDebugger(DebuggerBase):
                              momentum=self.args.momentum)
 
         try:
-            model_state = torch.load(self.args.load_sentence_model_path)
-            model.load_state_dict(model_state['model'])
+            # model_state = torch.load(self.args.load_sentence_model_path)
+            # model.load_state_dict(model_state['model'])
+            model.load_state_dict(self.model_state_dict['sentence_model'])
+            print("Sentence Model Loaded!")
             self.writer.write("[Load Sentence Model Succeed!\n")
         except Exception as err:
             self.writer.write("[Load Sentence model Failed {}!]\n".format(err))
@@ -636,8 +647,10 @@ class LSTMDebugger(DebuggerBase):
                          n_max=self.args.n_max)
 
         try:
-            model_state = torch.load(self.args.load_word_model_path)
-            model.load_state_dict(model_state['model'])
+            # model_state = torch.load(self.args.load_word_model_path)
+            # model.load_state_dict(model_state['model'])
+            model.load_state_dict(self.model_state_dict['word_model'])
+            print("Word Model Loaded!")
             self.writer.write("[Load Word Model Succeed!\n")
         except Exception as err:
             self.writer.write("[Load Word model Failed {}!]\n".format(err))
