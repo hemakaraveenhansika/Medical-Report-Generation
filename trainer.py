@@ -218,6 +218,7 @@ class DebuggerBase:
             print("Visual Extractor Loaded!")
             self.writer.write("[Load Visual Extractor Succeed!]\n")
         except Exception as err:
+            print(err)
             self.writer.write("[Load Model Failed] {}\n".format(err))
 
         if not self.args.visual_trained:
@@ -244,6 +245,7 @@ class DebuggerBase:
             print("Bert_encoder Loaded!")
             self.writer.write("[Load BERT model Succeed!]\n")
         except Exception as err:
+            print(err)
             self.writer.write("[Load BERT model Failed {}!]\n".format(err))
 
         if not self.args.bert_trained:
@@ -272,6 +274,7 @@ class DebuggerBase:
             print("Mlc Loaded!")
             self.writer.write("[Load MLC Succeed!]\n")
         except Exception as err:
+            print(err)
             self.writer.write("[Load MLC Failed {}!]\n".format(err))
 
         if not self.args.mlc_trained:
@@ -302,6 +305,7 @@ class DebuggerBase:
             print("co_attention Loaded!")
             self.writer.write("[Load Co-attention Succeed!]\n")
         except Exception as err:
+            print(err)
             self.writer.write("[Load Co-attention Failed {}!]\n".format(err))
 
         if not self.args.co_trained:
@@ -624,6 +628,7 @@ class LSTMDebugger(DebuggerBase):
             print("Sentence Model Loaded!")
             self.writer.write("[Load Sentence Model Succeed!\n")
         except Exception as err:
+            print(err)
             self.writer.write("[Load Sentence model Failed {}!]\n".format(err))
 
         if not self.args.sentence_trained:
@@ -653,6 +658,7 @@ class LSTMDebugger(DebuggerBase):
             print("Word Model Loaded!")
             self.writer.write("[Load Word Model Succeed!\n")
         except Exception as err:
+            print(err)
             self.writer.write("[Load Word model Failed {}!]\n".format(err))
 
         if not self.args.word_trained:
