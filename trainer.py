@@ -206,6 +206,7 @@ class DebuggerBase:
             return model_state
         except Exception as err:
             self.writer.write("[Load Model Failed] {}\n".format(err))
+            print("[Load Model Failed] {}\n".format(err))
             return None
 
     def _init_visual_extractor(self):
