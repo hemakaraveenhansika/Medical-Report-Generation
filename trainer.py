@@ -69,7 +69,7 @@ class DebuggerEncoderBase:
                 self.scheduler.step(train_contrastive_loss)
             else:
                 self.scheduler.step(val_contrastive_loss)
-            self.writer.write( "[{} - Epoch {}] train loss:{} - val_loss:{} - lr:{}\n".format(self._get_now(), epoch_id, train_loss, val_loss, self.optimizer.param_groups[0]['lr']))
+            self.writer.write( "[{} - Epoch {}] train loss:{} - val_loss:{} - lr:{}\n".format(self._get_now(), epoch_id, train_contrastive_loss, val_contrastive_loss, self.optimizer.param_groups[0]['lr']))
             self.save_encoder(epoch_id, val_contrastive_loss, train_contrastive_loss)
 
             results[epoch_id] = {
@@ -801,9 +801,8 @@ class ContrastiveModel(DebuggerEncoderBase):
             text_features = self.bert_encoder.forward(bert_tokens)
 
             batch_contrastive_loss = self.nt_xent_criterion(avg_features, text_features)
-            
-            print("visual_features.shape", visual_features.shape)
-            print("avg_features.shape", avg_features.shape)
+
+            print("\navg_features.shape", avg_features.shape)
             print("text_features.shape", text_features.shape)
             print("\nbatch contrastive loss :", batch_contrastive_loss.item())
 
