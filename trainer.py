@@ -93,23 +93,23 @@ class DebuggerEncoderBase:
             json.dump(result, f)
         print("logs saved in", result_path)
 
-    # def __plot_graph(self, result):
-    #     keys = ['contrastive_loss', 'loss']
-    #     modes = ['train', 'val']
-    #     for key in keys:
-    #         for mode in modes:
-    #             x = []
-    #             y = []
-    #             for i in range(self.start_epoch, self.args.epochs):
-    #                 print(str(i), mode+'_'+key)
-    #                 x.append(i)
-    #                 y.append(result[i][mode+'_'+key])
-    #             plt.plot(x, y, label=mode)
-    #             plt.xlabel('epoch')
-    #             plt.ylabel(key)
-    #             plt.title(key)
-    #         plt.legend()
-    #         plt.show()
+    def __plot_graph(self, result):
+        keys = ['contrastive_loss']
+        modes = ['train', 'val']
+        for key in keys:
+            for mode in modes:
+                x = []
+                y = []
+                for i in range(self.start_epoch, self.args.epochs):
+                    print(str(i), mode+'_'+key)
+                    x.append(i)
+                    y.append(result[i][mode+'_'+key])
+                plt.plot(x, y, label=mode)
+                plt.xlabel('epoch')
+                plt.ylabel(key)
+                plt.title(key)
+            plt.legend()
+            plt.show()
 
     def _epoch_encoder_train(self):
         raise NotImplementedError
