@@ -496,10 +496,8 @@ class DebuggerModelBase:
     #     return tokenizer
 
     def load_encoder_state_dict(self):
-        self.start_epoch = 0
         try:
             encoder_state = torch.load(self.args.load_encoder_path)
-            self.start_epoch = encoder_state['epoch'] + 1
             self.writer.write("[Load Encoder-{} Succeed!]\n".format(self.args.load_encoder_path))
             print("[Load Encoder-{} Succeed!]".format(self.args.load_encoder_path))
             return encoder_state
