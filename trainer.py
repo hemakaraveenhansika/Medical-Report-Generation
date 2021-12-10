@@ -891,11 +891,6 @@ class LSTMDebugger(DebuggerModelBase):
                          + self.args.lambda_stop * batch_stop_loss \
                          + self.args.lambda_word * batch_word_loss
 
-            print("batch_tag loss :", self.args.lambda_tag * batch_tag_loss.item())
-            print("batch_stop loss :", self.args.lambda_stop * batch_stop_loss.item())
-            print("batch_word loss :", self.args.lambda_word * batch_word_loss.item())
-            print("\nbatch loss :", batch_loss.item())
-
             self.optimizer.zero_grad()
             batch_loss.backward()
 
@@ -910,6 +905,12 @@ class LSTMDebugger(DebuggerModelBase):
             word_loss += self.args.lambda_word * batch_word_loss.item()
             loss += batch_loss.item()
 
+            print("batch_tag loss :", self.args.lambda_tag * batch_tag_loss.item())
+            print("batch_stop loss :", self.args.lambda_stop * batch_stop_loss.item())
+            print("batch_word loss :", self.args.lambda_word * batch_word_loss.item())
+            print("batch loss :", batch_loss.item())
+
+        print("train done")
         return tag_loss, stop_loss, word_loss, loss
 
     def _epoch_model_validate(self):
