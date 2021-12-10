@@ -842,7 +842,6 @@ class LSTMDebugger(DebuggerModelBase):
     def _epoch_model_train(self):
         tag_loss, stop_loss, word_loss, loss = 0, 0, 0, 0
         # self.extractor.train()
-        # self.extractor.eval()
         # self.bert_encoder.train()
         self.mlc.train()
         self.co_attention.train()

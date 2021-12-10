@@ -482,7 +482,7 @@ if __name__ == '__main__':
                         help='the path for vocabulary object')
     parser.add_argument('--file_lits', type=str, default='./data/new_data/debugging_data.txt',
                         help='the path for test file list')
-    parser.add_argument('--load_encoder_path', type=str, default='train_encoder_best_loss.pth.tar',
+    parser.add_argument('--load_encoder_path', type=str, default='/kaggle/input/mrg-contrastive-model/Medical-Report-Generation/models/v4/train_encoder_best_loss.pth.tar',
                         help='The path of loaded encoder')
     parser.add_argument('--load_model_path', type=str, default='train_model_best_loss.pth.tar',
                         help='The path of loaded model')
