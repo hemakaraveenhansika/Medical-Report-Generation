@@ -890,15 +890,18 @@ class LSTMDebugger(DebuggerModelBase):
             batch_loss = self.args.lambda_tag * batch_tag_loss \
                          + self.args.lambda_stop * batch_stop_loss \
                          + self.args.lambda_word * batch_word_loss
-
+            print('step 1')
             self.optimizer.zero_grad()
             batch_loss.backward()
+            print('step 2')
 
             if self.args.clip > 0:
                 torch.nn.utils.clip_grad_norm(self.sentence_model.parameters(), self.args.clip)
                 torch.nn.utils.clip_grad_norm(self.word_model.parameters(), self.args.clip)
+            print('step 3')
 
             self.optimizer.step()
+            print('step 4')
 
             tag_loss += self.args.lambda_tag * batch_tag_loss.item()
             stop_loss += self.args.lambda_stop * batch_stop_loss.item()
