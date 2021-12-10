@@ -410,9 +410,8 @@ class DebuggerModelBase:
             #           val_loss=val_loss,
             #           lr=self.optimizer.param_groups[0]['lr'],
             #           epoch=epoch_id)
+            # print("epoch_id", epoch_id, "train_loss", train_loss, "val_loss", val_loss)
 
-            # print("train_loss, val_loss ", epoch_id, train_loss, val_loss)
-        print(results)
         self.__save_json(results)
         self.__plot_graph(results)
         print("train done")
@@ -800,9 +799,9 @@ class ContrastiveModel(DebuggerEncoderBase):
 
             batch_contrastive_loss = self.nt_xent_criterion(avg_features, text_features)
 
-            print("\navg_features.shape", avg_features.shape)
-            print("text_features.shape", text_features.shape)
-            print("\nbatch contrastive loss :", batch_contrastive_loss.item())
+            # print("\navg_features.shape", avg_features.shape)
+            # print("text_features.shape", text_features.shape)
+            # print("\nbatch contrastive loss :", batch_contrastive_loss.item())
 
             self.optimizer.zero_grad()
             batch_contrastive_loss.backward()
@@ -860,9 +859,9 @@ class LSTMDebugger(DebuggerModelBase):
             visual_features, avg_features = self.extractor.forward(images)
             tags, semantic_features = self.mlc.forward(avg_features)
 
-            print("\nvisual_features.shape", visual_features.shape)
-            print("avg_features.shape", avg_features.shape)
-            print("semantic_features.shape", semantic_features.shape)
+            # print("\nvisual_features.shape", visual_features.shape)
+            # print("avg_features.shape", avg_features.shape)
+            # print("semantic_features.shape", semantic_features.shape)
 
             batch_tag_loss = self.mse_criterion(tags, self._to_var(label, requires_grad=False)).sum()
 
@@ -889,28 +888,25 @@ class LSTMDebugger(DebuggerModelBase):
             batch_loss = self.args.lambda_tag * batch_tag_loss \
                          + self.args.lambda_stop * batch_stop_loss \
                          + self.args.lambda_word * batch_word_loss
-            print('step 1')
+
             self.optimizer.zero_grad()
             batch_loss.backward()
-            print('step 2')
 
             if self.args.clip > 0:
                 torch.nn.utils.clip_grad_norm(self.sentence_model.parameters(), self.args.clip)
                 torch.nn.utils.clip_grad_norm(self.word_model.parameters(), self.args.clip)
-            print('step 3')
 
             self.optimizer.step()
-            print('step 4')
 
             tag_loss += self.args.lambda_tag * batch_tag_loss.item()
             stop_loss += self.args.lambda_stop * batch_stop_loss.item()
             word_loss += self.args.lambda_word * batch_word_loss.item()
             loss += batch_loss.item()
 
-            print("batch_tag loss :", self.args.lambda_tag * batch_tag_loss.item())
-            print("batch_stop loss :", self.args.lambda_stop * batch_stop_loss.item())
-            print("batch_word loss :", self.args.lambda_word * batch_word_loss.item())
-            print("batch loss :", batch_loss.item())
+            # print("batch_tag loss :", self.args.lambda_tag * batch_tag_loss.item())
+            # print("batch_stop loss :", self.args.lambda_stop * batch_stop_loss.item())
+            # print("batch_word loss :", self.args.lambda_word * batch_word_loss.item())
+            # print("batch loss :", batch_loss.item())
 
         print("train done")
         return tag_loss, stop_loss, word_loss, loss
