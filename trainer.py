@@ -79,7 +79,7 @@ class DebuggerEncoderBase:
                 'lr': self.optimizer.param_groups[0]['lr']
             }
 
-        print(results)
+        # print(results)
         self.__save_json(results)
         self.__plot_graph(results)
         print("train encoder done")
@@ -296,12 +296,12 @@ class DebuggerEncoderBase:
     def save_encoder(self, epoch_id, val_loss, train_loss):
         def save_whole_encoder(_filename):
             self.writer.write("Saved Encoder Model in {}\n".format(_filename))
-            print("save whole model in", os.path.join(self.model_dir, "{}".format(_filename)))
             torch.save({'extractor': self.extractor.state_dict(),
                         'bert': self.bert_encoder.state_dict(),
                         'optimizer': self.optimizer.state_dict(),
                         'epoch': epoch_id},
                        os.path.join(self.model_dir, "{}".format(_filename)))
+            print("save whole model in", os.path.join(self.model_dir, "{}".format(_filename)))
 
         def save_part_encoder(_filename, value):
             self.writer.write("Saved Model in {}\n".format(_filename))
@@ -863,10 +863,9 @@ class LSTMDebugger(DebuggerModelBase):
             visual_features, avg_features = self.extractor.forward(images)
             tags, semantic_features = self.mlc.forward(avg_features)
 
-            # print("visual_features.shape", visual_features.shape)
-            # print("avg_features.shape", avg_features.shape)
-            # print("semantic_features.shape", semantic_features.shape)
-            # print("text_features.shape", text_features.shape)
+            print("\nvisual_features.shape", visual_features.shape)
+            print("avg_features.shape", avg_features.shape)
+            print("semantic_features.shape", semantic_features.shape)
 
             batch_tag_loss = self.mse_criterion(tags, self._to_var(label, requires_grad=False)).sum()
 
@@ -894,11 +893,10 @@ class LSTMDebugger(DebuggerModelBase):
                          + self.args.lambda_stop * batch_stop_loss \
                          + self.args.lambda_word * batch_word_loss
 
-            # print("batch_contrastive loss :", batch_contrastive_loss, self.args.lambda_contrast * batch_contrastive_loss)
-            # print("batch_tag loss :", batch_tag_loss, self.args.lambda_tag * batch_tag_loss)
-            # print("batch_stop loss :", batch_stop_loss, self.args.lambda_stop * batch_stop_loss)
-            # print("batch_word loss :", batch_word_loss, self.args.lambda_word * batch_word_loss)
-            # print("\nbatch loss :", batch_loss.item())
+            print("batch_tag loss :", batch_tag_loss, self.args.lambda_tag * batch_tag_loss)
+            print("batch_stop loss :", batch_stop_loss, self.args.lambda_stop * batch_stop_loss)
+            print("batch_word loss :", batch_word_loss, self.args.lambda_word * batch_word_loss)
+            print("\nbatch loss :", batch_loss.item())
 
             self.optimizer.zero_grad()
             batch_loss.backward()
@@ -1067,7 +1065,7 @@ if __name__ == '__main__':
     # Load/Save model argument
     parser.add_argument('--model_path', type=str, default='./models/', help='path for saving trained models')
     parser.add_argument('--encoder_path', type=str, default='./models/', help='path for saving trained encoder')
-    parser.add_argument('--load_encoder_path', type=str, default='', help='The path of loaded encoder')
+    parser.add_argument('--load_encoder_path', type=str, default='/kaggle/input/mrg-contrastive-model/Medical-Report-Generation/models/v4/train_encoder_best_loss.pth.tar', help='The path of loaded encoder')
     parser.add_argument('--load_model_path', type=str, default='', help='The path of loaded model')
     parser.add_argument('--saved_model_name', type=str, default='v4', help='The name of saved model')
 
