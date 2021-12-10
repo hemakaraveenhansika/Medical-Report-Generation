@@ -814,7 +814,7 @@ class ContrastiveModel(DebuggerEncoderBase):
 
         return contrastive_loss
 
-    def _epoch_enoder_validate(self):
+    def _epoch_encoder_validate(self):
         contrastive_loss = 0
         self.extractor.eval()
         self.bert_encoder.eval()
