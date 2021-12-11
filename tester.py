@@ -27,7 +27,7 @@ class CaptionSampler(object):
         self.transform = self.__init_transform()
         self.data_loader = self.__init_data_loader(self.args.file_lits)
 
-        self.encoder_state_dict = self.__load_encoder_state_dict()
+        # self.encoder_state_dict = self.__load_encoder_state_dict()
         self.model_state_dict = self.__load_model_state_dict()
 
         self.extractor = self.__init_visual_extractor()
@@ -314,15 +314,15 @@ class CaptionSampler(object):
             json.dump(result, f)
         print("result saved in", result_path)
 
-    def __load_encoder_state_dict(self):
-        self.start_epoch = 0
-        try:
-            encoder_state = torch.load(self.args.load_encoder_path)
-            print("[Load Encoder-{} Succeed!]".format(self.args.load_encoder_path))
-            return encoder_state
-        except Exception as err:
-            print("[Load Encoder Failed] {}\n".format(err))
-            return None
+    # def __load_encoder_state_dict(self):
+    #     self.start_epoch = 0
+    #     try:
+    #         encoder_state = torch.load(self.args.load_encoder_path)
+    #         print("[Load Encoder-{} Succeed!]".format(self.args.load_encoder_path))
+    #         return encoder_state
+    #     except Exception as err:
+    #         print("[Load Encoder Failed] {}\n".format(err))
+    #         return None
 
     def __load_model_state_dict(self):
         try:
@@ -387,7 +387,7 @@ class CaptionSampler(object):
         if self.model_state_dict is not None:
             print("Visual Extractor Loaded!")
             # print(self.model_state_dict['extractor'])
-            model.load_state_dict(self.encoder_state_dict['extractor'])
+            model.load_state_dict(self.model_state_dict['extractor'])
 
         if self.args.cuda:
             model = model.cuda()
