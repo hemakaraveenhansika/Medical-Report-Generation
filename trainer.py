@@ -736,7 +736,7 @@ class DebuggerModelBase:
             self.writer.write("Saved Model in {}\n".format(_filename))
             print("save whole model in", os.path.join(self.model_dir, "{}".format(_filename)))
             torch.save({
-                        # 'extractor': self.extractor.state_dict(),
+                        'extractor': self.extractor.state_dict(),
                         'mlc': self.mlc.state_dict(),
                         # 'bert': self.bert_encoder.state_dict(),
                         'co_attention': self.co_attention.state_dict(),
