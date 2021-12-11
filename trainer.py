@@ -414,7 +414,7 @@ class DebuggerModelBase:
 
         self.__save_json(results)
         self.__plot_graph(results)
-        print("train done")
+        print("train model done")
 
     def __save_json(self, result):
         # result_path = os.path.join(self.args.model_dir, self.args.result_path)
@@ -908,7 +908,6 @@ class LSTMDebugger(DebuggerModelBase):
             # print("batch_word loss :", self.args.lambda_word * batch_word_loss.item())
             # print("batch loss :", batch_loss.item())
 
-        print("train done")
         return tag_loss, stop_loss, word_loss, loss
 
     def _epoch_model_validate(self):
