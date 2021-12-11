@@ -348,7 +348,7 @@ class DebuggerModelBase:
         self.vocab = self._init_vocab()
         # self.bert_tokenizer = self._init_bert_tokenizer()
         self.model_state_dict = self.load_model_state_dict()
-        self.encoder_state_dict = self.load_encoder_state_dict()
+        # self.encoder_state_dict = self.load_encoder_state_dict()
 
         self.train_data_loader = self._init_data_loader(self.args.train_file_list, self.train_transform)
         self.val_data_loader = self._init_data_loader(self.args.val_file_list, self.val_transform)
@@ -494,16 +494,16 @@ class DebuggerModelBase:
     #     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     #     return tokenizer
 
-    def load_encoder_state_dict(self):
-        try:
-            encoder_state = torch.load(self.args.load_encoder_path)
-            self.writer.write("[Load Encoder-{} Succeed!]\n".format(self.args.load_encoder_path))
-            print("[Load Encoder-{} Succeed!]".format(self.args.load_encoder_path))
-            return encoder_state
-        except Exception as err:
-            self.writer.write("[Load Encoder Failed] {}\n".format(err))
-            print("[Load Encoder Failed] {}\n".format(err))
-            return None
+    # def load_encoder_state_dict(self):
+    #     try:
+    #         encoder_state = torch.load(self.args.load_encoder_path)
+    #         self.writer.write("[Load Encoder-{} Succeed!]\n".format(self.args.load_encoder_path))
+    #         print("[Load Encoder-{} Succeed!]".format(self.args.load_encoder_path))
+    #         return encoder_state
+    #     except Exception as err:
+    #         self.writer.write("[Load Encoder Failed] {}\n".format(err))
+    #         print("[Load Encoder Failed] {}\n".format(err))
+    #         return None
 
     def load_model_state_dict(self):
         self.start_epoch = 0
@@ -525,7 +525,7 @@ class DebuggerModelBase:
         try:
             # model_state = torch.load(self.args.load_visual_model_path)
             # model.load_state_dict(model_state['model'])
-            model.load_state_dict(self.encoder_state_dict['extractor'])
+            model.load_state_dict(self.model_state_dict['extractor'])
             print("Visual Extractor Loaded!")
             self.writer.write("[Load Visual Extractor Succeed!]\n")
         except Exception as err:
@@ -840,7 +840,7 @@ class LSTMDebugger(DebuggerModelBase):
 
     def _epoch_model_train(self):
         tag_loss, stop_loss, word_loss, loss = 0, 0, 0, 0
-        # self.extractor.train()
+        self.extractor.train()
         # self.bert_encoder.train()
         self.mlc.train()
         self.co_attention.train()
@@ -859,9 +859,9 @@ class LSTMDebugger(DebuggerModelBase):
             visual_features, avg_features = self.extractor.forward(images)
             tags, semantic_features = self.mlc.forward(avg_features)
 
-            # print("\nvisual_features.shape", visual_features.shape)
-            # print("avg_features.shape", avg_features.shape)
-            # print("semantic_features.shape", semantic_features.shape)
+            print("\nvisual_features.shape", visual_features.shape)
+            print("avg_features.shape", avg_features.shape)
+            print("semantic_features.shape", semantic_features.shape)
 
             batch_tag_loss = self.mse_criterion(tags, self._to_var(label, requires_grad=False)).sum()
 
@@ -903,10 +903,10 @@ class LSTMDebugger(DebuggerModelBase):
             word_loss += self.args.lambda_word * batch_word_loss.item()
             loss += batch_loss.item()
 
-            # print("batch_tag loss :", self.args.lambda_tag * batch_tag_loss.item())
-            # print("batch_stop loss :", self.args.lambda_stop * batch_stop_loss.item())
-            # print("batch_word loss :", self.args.lambda_word * batch_word_loss.item())
-            # print("batch loss :", batch_loss.item())
+            print("batch_tag loss :", self.args.lambda_tag * batch_tag_loss.item())
+            print("batch_stop loss :", self.args.lambda_stop * batch_stop_loss.item())
+            print("batch_word loss :", self.args.lambda_word * batch_word_loss.item())
+            print("batch loss :", batch_loss.item())
 
         return tag_loss, stop_loss, word_loss, loss
 
@@ -1130,18 +1130,11 @@ if __name__ == '__main__':
     parser.add_argument('--result_encoder_name', type=str, default='logs_encoder',
                         help='the name of results')
 
-    parser.add_argument('--phase', type=str, default='encoder', help='the name of base')
     
     args = parser.parse_args()
     args.cuda = torch.cuda.is_available()
-    
-    if(args.phase == 'decoder'):
-        print("run decoder")
-        lstm_debugger = LSTMDebugger(args)
-        lstm_debugger.model_train()
-    else:
-        print("run encoder")
-        contrastive_model = ContrastiveModel(args)
-        contrastive_model.encoder_train()
+
+    lstm_debugger = LSTMDebugger(args)
+    lstm_debugger.model_train()
     
     
