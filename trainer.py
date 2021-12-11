@@ -859,9 +859,9 @@ class LSTMDebugger(DebuggerModelBase):
             visual_features, avg_features = self.extractor.forward(images)
             tags, semantic_features = self.mlc.forward(avg_features)
 
-            print("\nvisual_features.shape", visual_features.shape)
-            print("avg_features.shape", avg_features.shape)
-            print("semantic_features.shape", semantic_features.shape)
+            # print("\nvisual_features.shape", visual_features.shape)
+            # print("avg_features.shape", avg_features.shape)
+            # print("semantic_features.shape", semantic_features.shape)
 
             batch_tag_loss = self.mse_criterion(tags, self._to_var(label, requires_grad=False)).sum()
 
@@ -903,10 +903,10 @@ class LSTMDebugger(DebuggerModelBase):
             word_loss += self.args.lambda_word * batch_word_loss.item()
             loss += batch_loss.item()
 
-            print("batch_tag loss :", self.args.lambda_tag * batch_tag_loss.item())
-            print("batch_stop loss :", self.args.lambda_stop * batch_stop_loss.item())
-            print("batch_word loss :", self.args.lambda_word * batch_word_loss.item())
-            print("batch loss :", batch_loss.item())
+            # print("batch_tag loss :", self.args.lambda_tag * batch_tag_loss.item())
+            # print("batch_stop loss :", self.args.lambda_stop * batch_stop_loss.item())
+            # print("batch_word loss :", self.args.lambda_word * batch_word_loss.item())
+            # print("batch loss :", batch_loss.item())
 
         return tag_loss, stop_loss, word_loss, loss
 
