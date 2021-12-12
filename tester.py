@@ -179,6 +179,9 @@ class CaptionSampler(object):
                 bleu_score_ngram = self.get_sentence_ngram_bleu_score(real_sent, pred_sent)
                 bleu_score_tot += bleu_score
 
+                for index in range(len(bleu_score_ngram)):
+                    bleu_score_ngram_tot[index] += bleu_score_ngram[index]
+
                 results[id] = {
                     'Real Tags': ", ".join(self.tagger.inv_tags2array(real_tag)),
                     'Real Sent': real_sent,
