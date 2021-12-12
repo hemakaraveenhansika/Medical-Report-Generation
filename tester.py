@@ -184,7 +184,7 @@ class CaptionSampler(object):
                     'Sentence bleu_score': bleu_score
                 }
 
-                print("\n", results[id])
+                print("\n", results[id], id)
 
             bleu_score_final = bleu_score_tot/len(real_sentences)
             results["score"] = {"bleu_score" : bleu_score_final}
