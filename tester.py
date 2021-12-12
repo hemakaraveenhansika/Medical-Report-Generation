@@ -226,8 +226,8 @@ class CaptionSampler(object):
 
     def get_sentence_ngram_bleu_score(self, reference, candidate ):
         scores = []
-        # weights = [(1, 0, 0, 0), (0.5, 0.5, 0, 0), (0.33, 0.33, 0.33, 0), (0.25, 0.25, 0.25, 0.25)]
-        weights = [(1, 0, 0, 0), (0,1,0,0), (0,0,1,0), (0,0,0,1)]
+        weights = [(1, 0, 0, 0), (0.5, 0.5, 0, 0), (0.33, 0.33, 0.33, 0), (0.25, 0.25, 0.25, 0.25)]
+        # weights = [(1, 0, 0, 0), (0,1,0,0), (0,0,1,0), (0,0,0,1)]
         reference = reference.replace(".", "")
         candidate = candidate.replace(".", "")
         candidate = candidate.replace("<unk>", "")
